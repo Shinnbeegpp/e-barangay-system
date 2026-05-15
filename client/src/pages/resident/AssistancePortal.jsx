@@ -107,8 +107,8 @@ export default function AssistancePortal() {
               <input className="form-input" type="file" accept="image/*,.pdf" onChange={setFile('grades_file')} required />
             </div>
             <div className="form-group">
-              <label className="form-label">School ID * <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>(Image)</span></label>
-              <input className="form-input" type="file" accept="image/*" onChange={setFile('school_id')} required />
+              <label className="form-label">School ID * <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>(PDF or Image)</span></label>
+              <input className="form-input" type="file" accept="image/*,.pdf" onChange={setFile('school_id')} required />
             </div>
             <div style={{ display: 'flex', gap: 10 }}>
               <button className="btn btn-primary" type="submit" disabled={loading}>
