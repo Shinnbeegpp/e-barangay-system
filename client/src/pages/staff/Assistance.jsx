@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import Badge from '../../components/Badge';
 import { Lock, Unlock, CheckCircle, XCircle, X } from 'lucide-react';
 import { format } from 'date-fns';
+import { SERVER_URL } from '../../api/axios';
 
 export default function StaffAssistance() {
   const [programs, setPrograms] = useState([]);
@@ -106,11 +107,11 @@ export default function StaffAssistance() {
                     <td style={{ fontSize: 12, color: 'var(--text-muted)' }}>{format(new Date(a.applied_at), 'MMM d, yyyy')}</td>
                     <td style={{ fontSize: 12 }}>
                       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                        {a.medical_abstract && <a href={`http://localhost:5000${a.medical_abstract}`} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">Abstract</a>}
-                        {a.medical_bill && <a href={`http://localhost:5000${a.medical_bill}`} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">Bill</a>}
-                        {a.enrollment_certificate && <a href={`http://localhost:5000${a.enrollment_certificate}`} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">Enrollment</a>}
-                        {a.grades_file && <a href={`http://localhost:5000${a.grades_file}`} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">Grades</a>}
-                        {a.school_id && <a href={`http://localhost:5000${a.school_id}`} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">School ID</a>}
+                        {a.medical_abstract && <a href={`${SERVER_URL}${a.medical_abstract}`} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">Abstract</a>}
+                        {a.medical_bill && <a href={`${SERVER_URL}${a.medical_bill}`} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">Bill</a>}
+                        {a.enrollment_certificate && <a href={`${SERVER_URL}${a.enrollment_certificate}`} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">Enrollment</a>}
+                        {a.grades_file && <a href={`${SERVER_URL}${a.grades_file}`} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">Grades</a>}
+                        {a.school_id && <a href={`${SERVER_URL}${a.school_id}`} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">School ID</a>}
                       </div>
                     </td>
                     <td>

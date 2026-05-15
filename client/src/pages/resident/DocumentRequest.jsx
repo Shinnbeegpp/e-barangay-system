@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import Badge from '../../components/Badge';
 import { FileText, Send } from 'lucide-react';
 import { format } from 'date-fns';
+import { SERVER_URL } from '../../api/axios';
 
 export default function DocumentRequest() {
   const [form, setForm] = useState({ document_type: '', reason: '', mode: '' });
@@ -83,7 +84,7 @@ export default function DocumentRequest() {
                     <td style={{ fontSize: 12 }}>
                       {r.status === 'denied' && <span style={{ color: 'var(--danger)' }}>{r.denial_reason}</span>}
                       {r.status === 'ready' && r.pickup_date && <span style={{ color: 'var(--success)' }}>Pickup: {format(new Date(r.pickup_date), 'MMM d, yyyy h:mm a')}</span>}
-                      {r.soft_copy_url && <a href={`http://localhost:5000${r.soft_copy_url}`} target="_blank" rel="noreferrer" style={{ color: 'var(--primary)' }}>Download</a>}
+                      {r.soft_copy_url && <a href={`${SERVER_URL}${r.soft_copy_url}`} target="_blank" rel="noreferrer" style={{ color: 'var(--primary)' }}>Download</a>}
                     </td>
                   </tr>
                 ))}

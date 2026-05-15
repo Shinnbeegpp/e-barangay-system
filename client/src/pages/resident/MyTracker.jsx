@@ -3,6 +3,7 @@ import api from '../../api/axios';
 import Badge from '../../components/Badge';
 import { Clock, FileText, Heart, AlertTriangle } from 'lucide-react';
 import { format } from 'date-fns';
+import { SERVER_URL } from '../../api/axios';
 
 export default function MyTracker() {
   const [documents, setDocuments] = useState([]);
@@ -56,7 +57,7 @@ export default function MyTracker() {
                       <td style={{ fontSize: 12 }}>
                         {d.status === 'denied' && <span style={{ color: 'var(--danger)' }}>Denied: {d.denial_reason}</span>}
                         {d.pickup_date && <span style={{ color: 'var(--success)' }}>Pickup: {format(new Date(d.pickup_date), 'MMM d h:mm a')}</span>}
-                        {d.soft_copy_url && <a href={`http://localhost:5000${d.soft_copy_url}`} target="_blank" rel="noreferrer" style={{ color: 'var(--primary)' }}>📥 Download</a>}
+                        {d.soft_copy_url && <a href={`${SERVER_URL}${d.soft_copy_url}`} target="_blank" rel="noreferrer" style={{ color: 'var(--primary)' }}>📥 Download</a>}
                       </td>
                     </tr>
                   ))}

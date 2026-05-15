@@ -10,8 +10,13 @@ export default function StaffDashboard() {
   const [stats, setStats] = useState({ pendingVerifications: 0, pendingDocuments: 0, pendingAssistance: 0, pendingReports: 0 });
 
   useEffect(() => {
+  const fetchStats = () => {
     api.get('/staff/dashboard-stats').then(r => setStats(r.data)).catch(() => {});
-  }, []);
+  };
+  fetchStats();
+  const interval = setInterval(fetchStats, 15000);
+  return () => clearInterval(interval);
+}, []);
 
   const statCards = [
     { label: 'Pending Verifications', value: stats.pendingVerifications, icon: '👤', color: '#dbeafe', to: '/staff/verification' },

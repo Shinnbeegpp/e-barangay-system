@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import Badge from '../../components/Badge';
 import { CheckCircle, XCircle, Eye, X } from 'lucide-react';
 import { format } from 'date-fns';
+import { SERVER_URL } from '../../api/axios';
 
 export default function AccountVerification() {
   const [queue, setQueue] = useState([]);
@@ -66,7 +67,7 @@ export default function AccountVerification() {
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                         {r.profile_picture
-                          ? <img src={`http://localhost:5000${r.profile_picture}`} alt="" style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover' }} />
+                          ? <img src={`${SERVER_URL}${r.profile_picture}`} alt="" style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover' }} />
                           : <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>👤</div>
                         }
                         <div>
@@ -80,7 +81,7 @@ export default function AccountVerification() {
                     <td style={{ fontSize: 12, color: 'var(--text-muted)' }}>{r.house_number} {r.street_purok_sitio}, Tinurik</td>
                     <td style={{ fontSize: 12, color: 'var(--text-muted)' }}>{r.submitted_at ? format(new Date(r.submitted_at), 'MMM d, yyyy') : '—'}</td>
                     <td>
-                      {r.valid_id && <a href={`http://localhost:5000${r.valid_id}`} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">View ID</a>}
+                      {r.valid_id && <a href={`${SERVER_URL}${r.valid_id}`} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">View ID</a>}
                     </td>
                     <td>
                       <div style={{ display: 'flex', gap: 6 }}>
