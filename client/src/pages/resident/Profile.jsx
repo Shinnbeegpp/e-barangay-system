@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
-import api from '../../api/axios';
+import api, { SERVER_URL } from '../../api/axios';
 import toast from 'react-hot-toast';
-import { Save } from 'lucide-react';
+import { Save, X, Upload } from 'lucide-react';
 import Badge from '../../components/Badge';
-import { SERVER_URL } from '../../api/axios';
+
 
 export default function ResidentProfile() {
   const [profile, setProfile] = useState(null);
   const [form, setForm] = useState({});
   const [files, setFiles] = useState({});
+  const [viewFileUrl, setViewFileUrl] = useState(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -131,15 +132,85 @@ export default function ResidentProfile() {
             </div>
           </div>
           <div className="form-row">
+            {/* Profile Picture */}
             <div className="form-group">
               <label className="form-label">Profile Picture</label>
-              {profile?.profile_picture && <img src={`${SERVER_URL}${profile.profile_picture}`} alt="Profile" style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 8, marginBottom: 8, display: 'block' }} />}
-              <input className="form-input" type="file" accept="image/*" onChange={setFile('profile_picture')} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {/* Preview / View button */}
+                {profile?.profile_picture && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <img src={`${SERVER_URL}${profile.profile_picture}`} alt="Profile"
+                      style={{ width: 56, height: 56, objectFit: 'cover', borderRadius: '50%', border: '2px solid var(--border)', cursor: 'pointer' }}
+                      onClick={() => setViewFileUrl(`${SERVER_URL}${profile.profile_picture}`)} />
+                    <button type="button" className="btn btn-outline btn-sm"
+                      onClick={() => setViewFileUrl(`${SERVER_URL}${profile.profile_picture}`)}>
+                      👁 View Current Photo
+                    </button>
+                  </div>
+                )}
+                {/* Upload area */}
+                <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '20px 16px', border: '2px dashed var(--border)', borderRadius: 'var(--radius-sm)', cursor: 'pointer', background: 'var(--surface2)', transition: 'border-color .2s' }}
+                  onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--primary-light)'}
+                  onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}>
+                  <input type="file" accept="image/*" onChange={setFile('profile_picture')} style={{ display: 'none' }} />
+                  <Upload size={20} color="var(--text-muted)" />
+                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>
+                    {files.profile_picture ? files.profile_picture.name : 'Click to upload photo'}
+                  </span>
+                  <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>PNG, JPG up to 5MB</span>
+                </label>
+                {/* New file preview */}
+                {files.profile_picture && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: '#f0fdf4', borderRadius: 8, border: '1px solid #bbf7d0' }}>
+                    <img src={URL.createObjectURL(files.profile_picture)} alt="preview"
+                      style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover' }} />
+                    <span style={{ fontSize: 12, color: 'var(--success)', fontWeight: 600, flex: 1 }}>New photo selected</span>
+                    <button type="button" onClick={() => setFiles({ ...files, profile_picture: null })}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>
+                      <X size={16} />
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
+
+            {/* Valid ID */}
             <div className="form-group">
               <label className="form-label">Valid ID *</label>
-              {profile?.valid_id && <a href={`${SERVER_URL}${profile.valid_id}`} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: 'var(--primary)' }}>View current ID</a>}
-              <input className="form-input" type="file" accept="image/*,.pdf" onChange={setFile('valid_id')} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {/* View current ID button */}
+                {profile?.valid_id && (
+                  <button type="button" className="btn btn-outline btn-sm" style={{ alignSelf: 'flex-start' }}
+                    onClick={() => setViewFileUrl(`${SERVER_URL}${profile.valid_id}`)}>
+                    👁 View Current ID
+                  </button>
+                )}
+                {/* Upload area */}
+                <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '20px 16px', border: '2px dashed var(--border)', borderRadius: 'var(--radius-sm)', cursor: 'pointer', background: 'var(--surface2)', transition: 'border-color .2s' }}
+                  onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--primary-light)'}
+                  onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}>
+                  <input type="file" accept="image/*,.pdf" onChange={setFile('valid_id')} style={{ display: 'none' }} />
+                  <Upload size={20} color="var(--text-muted)" />
+                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>
+                    {files.valid_id ? files.valid_id.name : 'Click to upload Valid ID'}
+                  </span>
+                  <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>PNG, JPG, PDF up to 5MB</span>
+                </label>
+                {/* New file preview */}
+                {files.valid_id && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: '#f0fdf4', borderRadius: 8, border: '1px solid #bbf7d0' }}>
+                    {files.valid_id.type.startsWith('image/') && (
+                      <img src={URL.createObjectURL(files.valid_id)} alt="preview"
+                        style={{ width: 40, height: 40, borderRadius: 6, objectFit: 'cover' }} />
+                    )}
+                    <span style={{ fontSize: 12, color: 'var(--success)', fontWeight: 600, flex: 1 }}>{files.valid_id.name}</span>
+                    <button type="button" onClick={() => setFiles({ ...files, valid_id: null })}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>
+                      <X size={16} />
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -202,6 +273,26 @@ export default function ResidentProfile() {
           <Save size={16} /> {loading ? 'Saving...' : 'Save & Submit for Verification'}
         </button>
       </form>
+
+      {viewFileUrl && (
+        <div className="modal-overlay" onClick={() => setViewFileUrl(null)}>
+          <div className="modal" style={{ maxWidth: 700 }} onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>📄 File Preview</h3>
+              <button className="modal-close" onClick={() => setViewFileUrl(null)}><X size={20} /></button>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              {viewFileUrl.match(/\.pdf$/i)
+                ? <iframe src={viewFileUrl} style={{ width: '100%', height: 500, border: 'none', borderRadius: 8 }} title="File Preview" />
+                : <img src={viewFileUrl} alt="Preview" style={{ width: '100%', borderRadius: 8, border: '1px solid var(--border)' }} />
+              }
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16 }}>
+              <button className="btn btn-outline" onClick={() => setViewFileUrl(null)}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
