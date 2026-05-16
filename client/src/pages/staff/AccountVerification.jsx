@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react';
-import api from '../../api/axios';
+import api,{ SERVER_URL }from '../../api/axios';
 import toast from 'react-hot-toast';
-import Badge from '../../components/Badge';
-import { CheckCircle, XCircle, Eye, X } from 'lucide-react';
+import { CheckCircle, XCircle, X } from 'lucide-react';
 import { format } from 'date-fns';
-import { SERVER_URL } from '../../api/axios';
 
 export default function AccountVerification() {
   const [queue, setQueue] = useState([]);
@@ -13,6 +11,8 @@ export default function AccountVerification() {
   const [showModal, setShowModal] = useState(false);
   const [actionType, setActionType] = useState('');
   const [loading, setLoading] = useState(false);
+  const [viewIdUrl, setViewIdUrl] = useState(null);
+  const [viewResident, setViewResident] = useState(null);
 
   const load = () => api.get('/staff/verification').then(r => setQueue(r.data)).catch(() => {});
   useEffect(() => { load(); }, []);
@@ -63,7 +63,7 @@ export default function AccountVerification() {
               </thead>
               <tbody>
                 {queue.map(r => (
-                  <tr key={r.user_id}>
+                  <tr key={r.user_id} onClick={() => setViewResident(r)} style={{ cursor: 'pointer' }}>
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                         {r.profile_picture
@@ -81,10 +81,10 @@ export default function AccountVerification() {
                     <td style={{ fontSize: 12, color: 'var(--text-muted)' }}>{r.house_number} {r.street_purok_sitio}, Tinurik</td>
                     <td style={{ fontSize: 12, color: 'var(--text-muted)' }}>{r.submitted_at ? format(new Date(r.submitted_at), 'MMM d, yyyy') : '—'}</td>
                     <td>
-                      {r.valid_id && <a href={`${SERVER_URL}${r.valid_id}`} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">View ID</a>}
+                      {r.valid_id && <button className="btn btn-outline btn-sm" onClick={e => { e.stopPropagation(); setViewIdUrl(`${SERVER_URL}${r.valid_id}`); }}>View ID</button>}
                     </td>
                     <td>
-                      <div style={{ display: 'flex', gap: 6 }}>
+                      <div style={{ display: 'flex', gap: 6 }} onClick={e => e.stopPropagation()}>
                         <button className="btn btn-success btn-sm" onClick={() => openAction(r, 'approve')}><CheckCircle size={14} /> Approve</button>
                         <button className="btn btn-danger btn-sm" onClick={() => openAction(r, 'deny')}><XCircle size={14} /> Deny</button>
                       </div>
@@ -122,6 +122,76 @@ export default function AccountVerification() {
               <button className={`btn ${actionType === 'approve' ? 'btn-success' : 'btn-danger'}`} onClick={handleAction} disabled={loading}>
                 {loading ? 'Processing...' : actionType === 'approve' ? 'Approve' : 'Deny'}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {viewResident && (
+        <div className="modal-overlay">
+          <div className="modal" style={{ maxWidth: 600 }}>
+            <div className="modal-header">
+              <h3>👤 Resident Information</h3>
+              <button className="modal-close" onClick={() => setViewResident(null)}><X size={20} /></button>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20, paddingBottom: 16, borderBottom: '1px solid var(--border)' }}>
+              {viewResident.profile_picture
+                ? <img src={`${SERVER_URL}${viewResident.profile_picture}`} alt="" style={{ width: 72, height: 72, borderRadius: '50%', objectFit: 'cover', border: '3px solid var(--border)' }} />
+                : <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32 }}>👤</div>
+              }
+              <div>
+                <div style={{ fontWeight: 700, fontSize: 18 }}>{viewResident.first_name} {viewResident.middle_name || ''} {viewResident.last_name} {viewResident.suffix || ''}</div>
+                <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>{viewResident.email}</div>
+              </div>
+            </div>
+            {[
+              ['Gender', viewResident.gender],
+              ['Civil Status', viewResident.civil_status],
+              ['Date of Birth', viewResident.date_of_birth ? format(new Date(viewResident.date_of_birth), 'MMMM d, yyyy') : null],
+              ['Age', viewResident.age ? `${viewResident.age} years old` : null],
+              ['Nationality', viewResident.nationality],
+              ['Religion', viewResident.religion],
+              ['Mobile Number', viewResident.mobile_number],
+              ['Emergency Contact', viewResident.emergency_contact_person],
+              ['Emergency Number', viewResident.emergency_contact_number],
+              ['House No.', viewResident.house_number],
+              ['Street/Purok/Sitio', viewResident.street_purok_sitio],
+              ['Barangay', 'Tinurik'],
+              ['Municipality', 'Tanauan City'],
+              ['ZIP Code', '4232'],
+            ].map(([label, value]) => (
+              <div key={label} style={{ display: 'flex', borderBottom: '1px solid var(--border)', padding: '7px 0', gap: 12 }}>
+                <span style={{ fontWeight: 600, fontSize: 12, color: 'var(--text-muted)', minWidth: 160 }}>{label}</span>
+                <span style={{ fontSize: 13 }}>{value || '—'}</span>
+              </div>
+            ))}
+            {viewResident.valid_id && (
+              <div style={{ marginTop: 12 }}>
+                <button className="btn btn-outline btn-sm" onClick={() => { setViewResident(null); setViewIdUrl(`${SERVER_URL}${viewResident.valid_id}`); }}>📄 View Valid ID</button>
+              </div>
+            )}
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 20 }}>
+              <button className="btn btn-outline" onClick={() => setViewResident(null)}>Close</button>
+              <button className="btn btn-success" onClick={() => { setViewResident(null); openAction(viewResident, 'approve'); }}><CheckCircle size={14} /> Approve</button>
+              <button className="btn btn-danger" onClick={() => { setViewResident(null); openAction(viewResident, 'deny'); }}><XCircle size={14} /> Deny</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {viewIdUrl && (
+        <div className="modal-overlay" onClick={() => setViewIdUrl(null)}>
+          <div className="modal" style={{ maxWidth: 700 }} onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>📄 Valid ID</h3>
+              <button className="modal-close" onClick={() => setViewIdUrl(null)}><X size={20} /></button>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              {viewIdUrl.match(/\.pdf$/i)
+                ? <iframe src={viewIdUrl} style={{ width: '100%', height: 500, border: 'none', borderRadius: 8 }} title="Valid ID" />
+                : <img src={viewIdUrl} alt="Valid ID" style={{ width: '100%', borderRadius: 8, border: '1px solid var(--border)' }} />
+              }
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16 }}>
+              <button className="btn btn-outline" onClick={() => setViewIdUrl(null)}>Close</button>
             </div>
           </div>
         </div>

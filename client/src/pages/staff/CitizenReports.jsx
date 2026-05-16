@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import api from '../../api/axios';
+import api, { SERVER_URL } from '../../api/axios';
 import toast from 'react-hot-toast';
 import Badge from '../../components/Badge';
 import { X } from 'lucide-react';
@@ -27,7 +27,7 @@ export default function CitizenReports() {
       toast.success('Report updated');
       setSelected(null);
       load();
-    } catch (err) {
+    } catch {
       toast.error('Error updating report');
     } finally { setLoading(false); }
   };
@@ -92,6 +92,13 @@ export default function CitizenReports() {
               <div style={{ color: 'var(--text-muted)', fontSize: 12, marginBottom: 4 }}>📍 Location: {selected.location}</div>
               <hr className="divider" style={{ margin: '10px 0' }} />
               <p style={{ lineHeight: 1.6 }}>{selected.description}</p>
+              {selected.image_url && (
+                <div style={{ marginTop: 12 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '.05em' }}>Attached Photo</div>
+                  <img src={`${SERVER_URL}${selected.image_url}`} alt="evidence"
+                    style={{ width: '100%', maxHeight: 280, objectFit: 'cover', borderRadius: 8, border: '1px solid var(--border)' }} />
+                </div>
+              )}
             </div>
             <div className="form-group">
               <label className="form-label">Update Status</label>

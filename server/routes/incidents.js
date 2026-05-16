@@ -2,23 +2,22 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
 const { auth, staffOnly } = require('../middleware/auth');
+const upload = require('../middleware/upload');
 
-// POST /api/incidents
-router.post('/', auth, async (req, res) => {
+router.post('/', auth, upload.single('image'), async (req, res) => {
   const { title, description, location } = req.body;
   if (!title || !description || !location)
     return res.status(400).json({ message: 'All fields required' });
-
   try {
     const [profile] = await db.query(
       'SELECT verification_status FROM resident_profiles WHERE user_id = ?', [req.user.id]
     );
     if (!profile[0] || profile[0].verification_status !== 'verified')
       return res.status(403).json({ message: 'Account must be verified to file reports' });
-
+    const image_url = req.file ? '/uploads/' + req.file.filename : null;
     await db.query(
-      'INSERT INTO incident_reports (user_id, title, description, location) VALUES (?, ?, ?, ?)',
-      [req.user.id, title, description, location]
+      'INSERT INTO incident_reports (user_id, title, description, location, image_url) VALUES (?, ?, ?, ?, ?)',
+      [req.user.id, title, description, location, image_url]
     );
     res.status(201).json({ message: 'Report filed successfully' });
   } catch (err) {
@@ -26,7 +25,6 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
-// GET /api/incidents/my
 router.get('/my', auth, async (req, res) => {
   try {
     const [rows] = await db.query(
@@ -39,7 +37,6 @@ router.get('/my', auth, async (req, res) => {
   }
 });
 
-// GET /api/incidents - staff
 router.get('/', auth, staffOnly, async (req, res) => {
   try {
     const [rows] = await db.query(
@@ -53,7 +50,6 @@ router.get('/', auth, staffOnly, async (req, res) => {
   }
 });
 
-// PUT /api/incidents/:id - staff updates status
 router.put('/:id', auth, staffOnly, async (req, res) => {
   const { status, staff_notes } = req.body;
   try {

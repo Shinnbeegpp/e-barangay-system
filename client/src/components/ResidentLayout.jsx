@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Menu, X, LayoutDashboard, User, FileText, Heart, AlertTriangle, Clock, Settings, LogOut } from 'lucide-react';
+import LogoutConfirm from './LogoutConfirm';
 
 const navItems = [
   { to: '/resident/dashboard', icon: <LayoutDashboard size={16} />, label: 'Dashboard' },
@@ -15,17 +16,20 @@ const navItems = [
 
 export default function ResidentLayout() {
   const [open, setOpen] = useState(false);
+  const [showLogout, setShowLogout] = useState(false);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => { logout(); navigate('/login'); };
+  const handleLogoutClick = () => setShowLogout(true);
 
   return (
     <div className="layout">
+      {showLogout && <LogoutConfirm onConfirm={handleLogout} onCancel={() => setShowLogout(false)} />}
       <div className={`sidebar-overlay ${open ? 'open' : ''}`} onClick={() => setOpen(false)} />
       <aside className={`sidebar ${open ? 'open' : ''}`}>
         <div className="sidebar-brand">
-          <h1>🏛️ E-Barangay<br />Tinurik</h1>
+          <h1>🏛️ E-Barangay System<br /></h1>
           <p>Resident Portal</p>
         </div>
         <nav className="sidebar-nav">
@@ -41,7 +45,7 @@ export default function ResidentLayout() {
             <strong>{user?.first_name} {user?.last_name}</strong>
             Resident
           </div>
-          <button className="btn-logout" onClick={handleLogout}><LogOut size={14} style={{ display: 'inline', marginRight: 6 }} />Sign Out</button>
+          <button className="btn-logout" onClick={handleLogoutClick}><LogOut size={14} style={{ display: 'inline', marginRight: 6 }} />Sign Out</button>
         </div>
       </aside>
 
@@ -50,7 +54,7 @@ export default function ResidentLayout() {
           <button className="menu-toggle" onClick={() => setOpen(!open)}>
             {open ? <X size={22} /> : <Menu size={22} />}
           </button>
-          <span className="topbar-title">E-Barangay Tinurik</span>
+          <span className="topbar-title">E-Barangay System</span>
           <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>Resident Portal</span>
         </header>
         <div className="page-content">

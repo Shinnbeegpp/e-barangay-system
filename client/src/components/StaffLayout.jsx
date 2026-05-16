@@ -3,9 +3,11 @@ import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 import { Menu, X, LayoutDashboard, UserCheck, FileText, Heart, AlertTriangle, Megaphone, Users, ShieldCheck, ScrollText, Settings, LogOut } from 'lucide-react';
+import LogoutConfirm from './LogoutConfirm';
 
 export default function StaffLayout() {
   const [open, setOpen] = useState(false);
+  const [showLogout, setShowLogout] = useState(false);
   const [stats, setStats] = useState({});
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -21,6 +23,7 @@ useEffect(() => {
 }, []);
 
   const handleLogout = () => { logout(); navigate('/login'); };
+  const handleLogoutClick = () => setShowLogout(true);
 
   const navItems = [
     { to: '/staff/dashboard', icon: <LayoutDashboard size={16} />, label: 'Dashboard' },
@@ -37,10 +40,11 @@ useEffect(() => {
 
   return (
     <div className="layout">
+      {showLogout && <LogoutConfirm onConfirm={handleLogout} onCancel={() => setShowLogout(false)} />}
       <div className={`sidebar-overlay ${open ? 'open' : ''}`} onClick={() => setOpen(false)} />
       <aside className={`sidebar ${open ? 'open' : ''}`}>
         <div className="sidebar-brand">
-          <h1>🏛️ E-Barangay<br />Tinurik</h1>
+          <h1>🏛️ E-Barangay System<br /></h1>
           <p>{user?.role === 'admin' ? 'Admin Portal' : 'Staff Portal'}</p>
         </div>
         <nav className="sidebar-nav">
@@ -57,7 +61,7 @@ useEffect(() => {
             <strong>{user?.first_name} {user?.last_name}</strong>
             {user?.role === 'admin' ? 'Administrator' : 'Staff'}
           </div>
-          <button className="btn-logout" onClick={handleLogout}><LogOut size={14} style={{ display: 'inline', marginRight: 6 }} />Sign Out</button>
+          <button className="btn-logout" onClick={handleLogoutClick}><LogOut size={14} style={{ display: 'inline', marginRight: 6 }} />Sign Out</button>
         </div>
       </aside>
 
@@ -66,7 +70,7 @@ useEffect(() => {
           <button className="menu-toggle" onClick={() => setOpen(!open)}>
             {open ? <X size={22} /> : <Menu size={22} />}
           </button>
-          <span className="topbar-title">E-Barangay Tinurik</span>
+          <span className="topbar-title">E-Barangay System</span>
           <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>{user?.role === 'admin' ? 'Admin' : 'Staff'} Portal</span>
         </header>
         <div className="page-content">

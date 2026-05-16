@@ -80,8 +80,10 @@ router.put('/settings', auth, async (req, res) => {
     if (current_password) {
       const match = await bcrypt.compare(current_password, user.password);
       if (!match) return res.status(400).json({ message: 'Current password is incorrect' });
-      const hashed = await bcrypt.hash(new_password, 10);
-      await db.query('UPDATE users SET password = ? WHERE id = ?', [hashed, req.user.id]);
+      if (new_password) {
+        const hashed = await bcrypt.hash(new_password, 10);
+        await db.query('UPDATE users SET password = ? WHERE id = ?', [hashed, req.user.id]);
+      }
     }
 
     if (email && email !== user.email) {

@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
-import api from '../../api/axios';
+import api, { SERVER_URL } from '../../api/axios';
 import toast from 'react-hot-toast';
 import Badge from '../../components/Badge';
 import { Lock, Unlock, CheckCircle, XCircle, X } from 'lucide-react';
 import { format } from 'date-fns';
-import { SERVER_URL } from '../../api/axios';
 
 export default function StaffAssistance() {
   const [programs, setPrograms] = useState([]);
@@ -14,6 +13,7 @@ export default function StaffAssistance() {
   const [denialReason, setDenialReason] = useState('');
   const [actionType, setActionType] = useState('');
   const [loading, setLoading] = useState(false);
+  const [viewFileUrl, setViewFileUrl] = useState(null);
 
   const loadPrograms = () => api.get('/assistance/programs').then(r => setPrograms(r.data)).catch(() => {});
   const loadApps = (type) => api.get(`/assistance?type=${type}`).then(r => setApplications(r.data)).catch(() => {});
@@ -26,7 +26,7 @@ export default function StaffAssistance() {
       await api.put(`/assistance/programs/${type}`, { is_locked: !currentLocked });
       toast.success(`${type} assistance ${currentLocked ? 'unlocked' : 'locked'}`);
       loadPrograms();
-    } catch (err) {
+    } catch {
       toast.error('Error updating program status');
     }
   };
@@ -39,7 +39,7 @@ export default function StaffAssistance() {
       toast.success(`Application ${actionType} successfully`);
       setSelected(null);
       loadApps(activeTab);
-    } catch (err) {
+    } catch {
       toast.error('Error processing application');
     } finally { setLoading(false); }
   };
@@ -107,11 +107,11 @@ export default function StaffAssistance() {
                     <td style={{ fontSize: 12, color: 'var(--text-muted)' }}>{format(new Date(a.applied_at), 'MMM d, yyyy')}</td>
                     <td style={{ fontSize: 12 }}>
                       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                        {a.medical_abstract && <a href={`${SERVER_URL}${a.medical_abstract}`} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">Abstract</a>}
-                        {a.medical_bill && <a href={`${SERVER_URL}${a.medical_bill}`} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">Bill</a>}
-                        {a.enrollment_certificate && <a href={`${SERVER_URL}${a.enrollment_certificate}`} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">Enrollment</a>}
-                        {a.grades_file && <a href={`${SERVER_URL}${a.grades_file}`} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">Grades</a>}
-                        {a.school_id && <a href={`${SERVER_URL}${a.school_id}`} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">School ID</a>}
+                        {a.medical_abstract && <button className="btn btn-outline btn-sm" onClick={() => setViewFileUrl(`${SERVER_URL}${a.medical_abstract}`)}>Abstract</button>}
+                        {a.medical_bill && <button className="btn btn-outline btn-sm" onClick={() => setViewFileUrl(`${SERVER_URL}${a.medical_bill}`)}>Bill</button>}
+                        {a.enrollment_certificate && <button className="btn btn-outline btn-sm" onClick={() => setViewFileUrl(`${SERVER_URL}${a.enrollment_certificate}`)}>Enrollment</button>}
+                        {a.grades_file && <button className="btn btn-outline btn-sm" onClick={() => setViewFileUrl(`${SERVER_URL}${a.grades_file}`)}>Grades</button>}
+                        {a.school_id && <button className="btn btn-outline btn-sm" onClick={() => setViewFileUrl(`${SERVER_URL}${a.school_id}`)}>School ID</button>}
                       </div>
                     </td>
                     <td>
@@ -158,6 +158,26 @@ export default function StaffAssistance() {
               <button className={`btn ${actionType === 'approved' ? 'btn-success' : 'btn-danger'}`} onClick={handleAction} disabled={loading}>
                 {loading ? 'Processing...' : actionType === 'approved' ? 'Approve' : 'Deny'}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {viewFileUrl && (
+        <div className="modal-overlay" onClick={() => setViewFileUrl(null)}>
+          <div className="modal" style={{ maxWidth: 700 }} onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>📄 Document Viewer</h3>
+              <button className="modal-close" onClick={() => setViewFileUrl(null)}><X size={20} /></button>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              {viewFileUrl.match(/\.pdf$/i)
+                ? <iframe src={viewFileUrl} style={{ width: '100%', height: 500, border: 'none', borderRadius: 8 }} title="Document" />
+                : <img src={viewFileUrl} alt="Document" style={{ width: '100%', borderRadius: 8, border: '1px solid var(--border)' }} />
+              }
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16 }}>
+              <button className="btn btn-outline" onClick={() => setViewFileUrl(null)}>Close</button>
             </div>
           </div>
         </div>
