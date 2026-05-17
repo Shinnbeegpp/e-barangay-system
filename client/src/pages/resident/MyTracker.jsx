@@ -76,10 +76,22 @@ export default function MyTracker() {
                           </button>
                         )}
                         {d.soft_copy_url && (
-                          <a href={fileUrl(d.soft_copy_url)} target="_blank" rel="noreferrer"
-                            style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'var(--primary)', color: '#fff', borderRadius: 6, padding: '4px 10px', fontSize: 11, fontWeight: 600, textDecoration: 'none' }}>
+                          <button
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'var(--primary)', color: '#fff', borderRadius: 6, padding: '4px 10px', fontSize: 11, fontWeight: 600, border: 'none', cursor: 'pointer' }}
+                            onClick={async () => {
+                              const url = fileUrl(d.soft_copy_url);
+                              const res = await fetch(url);
+                              const blob = await res.blob();
+                              const ext = blob.type.includes('pdf') ? '.pdf' : blob.type.includes('png') ? '.png' : '.jpg';
+                              const link = document.createElement('a');
+                              link.href = URL.createObjectURL(blob);
+                              link.download = `document_${d.id}${ext}`;
+                              document.body.appendChild(link);
+                              link.click();
+                              document.body.removeChild(link);
+                            }}>
                             <Download size={11} /> Download
-                          </a>
+                          </button>
                         )}
                       </td>
                     </tr>
