@@ -2,12 +2,12 @@ import { useState, useEffect } from 'react';
 import api from '../../api/axios';
 import toast from 'react-hot-toast';
 import Badge from '../../components/Badge';
-import { Lock, Send, Upload } from 'lucide-react';
+import { Lock, Send, Upload, X, AlertCircle } from 'lucide-react';
 import { format } from 'date-fns';
 
 const toLocal = (dateStr) => {
   const d = new Date(dateStr);
-  return new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+  return new Date(d.getTime() + (8 * 60 * 60 * 1000));
 };
 
 const ProgramCard = ({ prog, type, icon, title, desc, selected, onSelect }) => {
@@ -41,6 +41,7 @@ export default function AssistancePortal() {
   const [files, setFiles] = useState({});
   const [loading, setLoading] = useState(false);
   const [applications, setApplications] = useState([]);
+  const [noteModal, setNoteModal] = useState(null);
 
   const loadPrograms = () => api.get('/assistance/programs').then(r => setPrograms(r.data)).catch(() => {});
   const loadApps = () => api.get('/assistance/my').then(r => setApplications(r.data)).catch(() => {});
@@ -89,7 +90,7 @@ export default function AssistancePortal() {
             <div className="form-group">
               <label className="form-label">Medical Abstract * <span style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 400 }}>(PDF or Image)</span></label>
               {!files.medical_abstract && (
-                <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '20px 16px', border: '2px dashed var(--border)', borderRadius: 'var(--radius-sm)', cursor: 'pointer', background: 'var(--surface2)', transition: 'border-color .2s' }}
+                <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '20px 16px', border: '2px dashed var(--border)', borderRadius: 'var(--radius-sm)', cursor: 'pointer', background: 'var(--surface2)', transition: 'border-color .2s', maxWidth: 360 }}
                   onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--primary-light)'}
                   onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}>
                   <input type="file" accept="image/*,.pdf" onChange={setFile('medical_abstract')} style={{ display: 'none' }} required />
@@ -99,7 +100,7 @@ export default function AssistancePortal() {
                 </label>
               )}
               {files.medical_abstract && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 8, padding: '8px 12px', background: '#f0fdf4', borderRadius: 8, border: '1px solid #bbf7d0' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 8, padding: '8px 12px', background: '#f0fdf4', borderRadius: 8, border: '1px solid #bbf7d0', }}>
                   <span style={{ fontSize: 12, color: 'var(--success)', fontWeight: 600, flex: 1 }}>✅ {files.medical_abstract.name}</span>
                   <button type="button" onClick={() => setFiles({ ...files, medical_abstract: null })} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>✕</button>
                 </div>
@@ -108,7 +109,7 @@ export default function AssistancePortal() {
             <div className="form-group">
               <label className="form-label">Medical Bill / Statement of Account * <span style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 400 }}>(PDF or Image)</span></label>
               {!files.medical_bill && (
-                <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '20px 16px', border: '2px dashed var(--border)', borderRadius: 'var(--radius-sm)', cursor: 'pointer', background: 'var(--surface2)', transition: 'border-color .2s' }}
+                <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '20px 16px', border: '2px dashed var(--border)', borderRadius: 'var(--radius-sm)', cursor: 'pointer', background: 'var(--surface2)', transition: 'border-color .2s', maxWidth: 360 }}
                   onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--primary-light)'}
                   onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}>
                   <input type="file" accept="image/*,.pdf" onChange={setFile('medical_bill')} style={{ display: 'none' }} required />
@@ -145,7 +146,7 @@ export default function AssistancePortal() {
               <div className="form-group" key={key}>
                 <label className="form-label">{label} *</label>
                 {!files[key] && (
-                  <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '20px 16px', border: '2px dashed var(--border)', borderRadius: 'var(--radius-sm)', cursor: 'pointer', background: 'var(--surface2)', transition: 'border-color .2s' }}
+                  <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '20px 16px', border: '2px dashed var(--border)', borderRadius: 'var(--radius-sm)', cursor: 'pointer', background: 'var(--surface2)', transition: 'border-color .2s', maxWidth: 360 }}
                     onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--primary-light)'}
                     onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}>
                     <input type="file" accept={accept} onChange={setFile(key)} style={{ display: 'none' }} required />
@@ -184,7 +185,14 @@ export default function AssistancePortal() {
                     <td style={{ fontWeight: 600, textTransform: 'capitalize' }}>{a.program_type} Assistance</td>
                     <td><Badge status={a.status} /></td>
                     <td style={{ fontSize: 12, color: 'var(--text-muted)' }}>{format(toLocal(a.applied_at), 'MMM d, yyyy')}</td>
-                    <td style={{ fontSize: 12, color: 'var(--danger)' }}>{a.status === 'denied' && `Reason: ${a.denial_reason}`}</td>
+                    <td style={{ fontSize: 12 }}>
+                      {a.status === 'denied' && a.denial_reason && (
+                        <button onClick={() => setNoteModal({ text: a.denial_reason, updated_at: a.updated_at })}
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: '#fff0f0', color: 'var(--danger)', border: '1px solid var(--danger)', borderRadius: 6, padding: '3px 8px', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>
+                          <AlertCircle size={11} /> View Reason
+                        </button>
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -192,6 +200,22 @@ export default function AssistancePortal() {
           </div>
         )}
       </div>
+      {noteModal && (
+        <div className="modal-overlay" onClick={() => setNoteModal(null)}>
+          <div className="modal" style={{ maxWidth: 420 }} onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>❌ Denial Reason</h3>
+              <button className="modal-close" onClick={() => setNoteModal(null)}><X size={20} /></button>
+            </div>
+            <p style={{ color: 'var(--danger)', lineHeight: 1.7, fontSize: 14, marginBottom: noteModal.updated_at ? 12 : 0 }}>{noteModal.text}</p>
+            {noteModal.updated_at && (
+              <div style={{ fontSize: 11, color: 'var(--text-muted)', paddingTop: 10, borderTop: '1px solid var(--border)' }}>
+                🕐 Updated on {format(toLocal(noteModal.updated_at), 'MMMM d, yyyy h:mm a')}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

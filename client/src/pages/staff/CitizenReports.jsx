@@ -5,6 +5,11 @@ import Badge from '../../components/Badge';
 import { X } from 'lucide-react';
 import { format } from 'date-fns';
 
+const toLocal = (dateStr) => {
+  const d = new Date(dateStr);
+  return new Date(d.getTime() + (8 * 60 * 60 * 1000));
+};
+
 export default function CitizenReports() {
   const [reports, setReports] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -67,7 +72,7 @@ export default function CitizenReports() {
                     <td style={{ fontWeight: 500, maxWidth: 200 }}>{r.title}</td>
                     <td style={{ fontSize: 12, color: 'var(--text-muted)' }}>{r.location}</td>
                     <td><Badge status={r.status} /></td>
-                    <td style={{ fontSize: 12, color: 'var(--text-muted)' }}>{format(new Date(r.reported_at), 'MMM d, yyyy')}</td>
+                    <td style={{ fontSize: 12, color: 'var(--text-muted)' }}>{format(toLocal(r.reported_at), 'MMM d, yyyy')}</td>
                     <td>
                       <button className="btn btn-primary btn-sm" onClick={() => openReport(r)}>View & Act</button>
                     </td>
@@ -86,18 +91,39 @@ export default function CitizenReports() {
               <h3>⚠️ Incident Report Details</h3>
               <button className="modal-close" onClick={() => setSelected(null)}><X size={20} /></button>
             </div>
-            <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 14, marginBottom: 16, fontSize: 13 }}>
-              <div style={{ fontWeight: 700, marginBottom: 4 }}>{selected.title}</div>
-              <div style={{ color: 'var(--text-muted)', marginBottom: 8, fontSize: 12 }}>Filed by: {selected.first_name} {selected.last_name} · {format(new Date(selected.reported_at), 'MMM d, yyyy h:mm a')}</div>
-              <div style={{ color: 'var(--text-muted)', fontSize: 12, marginBottom: 4 }}>📍 Location: {selected.location}</div>
-              <hr className="divider" style={{ margin: '10px 0' }} />
-              <p style={{ lineHeight: 1.6 }}>{selected.description}</p>
-              {selected.image_url && (
-                <div style={{ marginTop: 12 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '.05em' }}>Attached Photo</div>
-                  <img src={`${SERVER_URL}${selected.image_url}`} alt="evidence"
-                    style={{ width: '100%', maxHeight: 280, objectFit: 'cover', borderRadius: 8, border: '1px solid var(--border)' }} />
+            <div style={{ background: 'var(--surface2)', borderRadius: 10, padding: '14px 16px', marginBottom: 18, border: '1px solid var(--border)' }}>
+              {/* Header: name + badge */}
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10, marginBottom: 12, paddingBottom: 12, borderBottom: '1px solid var(--border)' }}>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--text)', marginBottom: 3 }}>{selected.title}</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Filed by <strong>{selected.first_name} {selected.last_name}</strong> · {format(toLocal(selected.reported_at), 'MMM d, yyyy h:mm a')}</div>
                 </div>
+                <Badge status={selected.status} />
+              </div>
+
+              {/* Meta grid */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 16px', fontSize: 13, marginBottom: 12 }}>
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 2 }}>Location</div>
+                  <div style={{ fontWeight: 600, color: 'var(--text)' }}>📍 {selected.location}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 2 }}>Email</div>
+                  <div style={{ fontWeight: 600, color: 'var(--text)' }}>{selected.email}</div>
+                </div>
+                <div style={{ gridColumn: '1 / -1' }}>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Description</div>
+                  <div style={{ color: 'var(--text)', lineHeight: 1.6 }}>{selected.description}</div>
+                </div>
+              </div>
+
+              {/* Attached photo */}
+              {selected.image_url && (
+                <>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>Attached Photo</div>
+                  <img src={`${SERVER_URL}${selected.image_url}`} alt="evidence"
+                    style={{ width: '100%', maxHeight: 240, objectFit: 'cover', borderRadius: 8, border: '1px solid var(--border)' }} />
+                </>
               )}
             </div>
             <div className="form-group">

@@ -2,8 +2,13 @@ import { useState, useEffect } from 'react';
 import api, { SERVER_URL } from '../../api/axios';
 import toast from 'react-hot-toast';
 import Badge from '../../components/Badge';
-import { Lock, Unlock, CheckCircle, XCircle, X } from 'lucide-react';
+import { Lock, Unlock, CheckCircle, XCircle, X, AlertCircle } from 'lucide-react';
 import { format } from 'date-fns';
+
+const toLocal = (dateStr) => {
+  const d = new Date(dateStr);
+  return new Date(d.getTime() + (8 * 60 * 60 * 1000));
+};
 
 export default function StaffAssistance() {
   const [programs, setPrograms] = useState([]);
@@ -104,7 +109,7 @@ export default function StaffAssistance() {
                       <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{a.email}</div>
                     </td>
                     <td><Badge status={a.status} /></td>
-                    <td style={{ fontSize: 12, color: 'var(--text-muted)' }}>{format(new Date(a.applied_at), 'MMM d, yyyy')}</td>
+                    <td style={{ fontSize: 12, color: 'var(--text-muted)' }}>{format(toLocal(a.applied_at), 'MMM d, yyyy')}</td>
                     <td style={{ fontSize: 12 }}>
                       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                         {a.medical_abstract && <button className="btn btn-outline btn-sm" onClick={() => setViewFileUrl(`${SERVER_URL}${a.medical_abstract}`)}>Abstract</button>}
@@ -125,6 +130,12 @@ export default function StaffAssistance() {
                           </button>
                         </div>
                       )}
+                      {a.status === 'denied' && a.denial_reason && (
+                        <button onClick={() => { setSelected(a); setActionType('view_reason'); }}
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: '#fff0f0', color: 'var(--danger)', border: '1px solid var(--danger)', borderRadius: 6, padding: '3px 8px', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>
+                          <AlertCircle size={11} /> View Reason
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -138,27 +149,38 @@ export default function StaffAssistance() {
         <div className="modal-overlay">
           <div className="modal">
             <div className="modal-header">
-              <h3>{actionType === 'approved' ? '✅ Approve Application' : '❌ Deny Application'}</h3>
+              <h3>{actionType === 'approved' ? '✅ Approve Application' : actionType === 'view_reason' ? '❌ Denial Reason' : '❌ Deny Application'}</h3>
               <button className="modal-close" onClick={() => setSelected(null)}><X size={20} /></button>
             </div>
-            <p style={{ marginBottom: 16, color: 'var(--text-muted)', fontSize: 14 }}>
-              {actionType === 'approved'
-                ? `Approve the ${activeTab} assistance application of ${selected.first_name} ${selected.last_name}?`
-                : `Deny the application of ${selected.first_name} ${selected.last_name}. Please provide a reason.`}
-            </p>
-            {actionType === 'denied' && (
-              <div className="form-group">
-                <label className="form-label">Denial Reason *</label>
-                <textarea className="form-textarea" style={{ minHeight: 80 }}
-                  value={denialReason} onChange={e => setDenialReason(e.target.value)} />
+            {actionType === 'view_reason' ? (
+              <div>
+                <p style={{ color: 'var(--danger)', lineHeight: 1.7, fontSize: 14, marginBottom: 12 }}>{selected.denial_reason}</p>
+                <div style={{ fontSize: 11, color: 'var(--text-muted)', paddingTop: 10, borderTop: '1px solid var(--border)' }}>
+                  🕐 Updated on {format(toLocal(selected.updated_at), 'MMMM d, yyyy h:mm a')}
+                </div>
               </div>
+            ) : (
+              <>
+                <p style={{ marginBottom: 16, color: 'var(--text-muted)', fontSize: 14 }}>
+                  {actionType === 'approved'
+                    ? `Approve the ${activeTab} assistance application of ${selected.first_name} ${selected.last_name}?`
+                    : `Deny the application of ${selected.first_name} ${selected.last_name}. Please provide a reason.`}
+                </p>
+                {actionType === 'denied' && (
+                  <div className="form-group">
+                    <label className="form-label">Denial Reason *</label>
+                    <textarea className="form-textarea" style={{ minHeight: 80 }}
+                      value={denialReason} onChange={e => setDenialReason(e.target.value)} />
+                  </div>
+                )}
+                <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+                  <button className="btn btn-outline" onClick={() => setSelected(null)}>Cancel</button>
+                  <button className={`btn ${actionType === 'approved' ? 'btn-success' : 'btn-danger'}`} onClick={handleAction} disabled={loading}>
+                    {loading ? 'Processing...' : actionType === 'approved' ? 'Approve' : 'Deny'}
+                  </button>
+                </div>
+              </>
             )}
-            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-              <button className="btn btn-outline" onClick={() => setSelected(null)}>Cancel</button>
-              <button className={`btn ${actionType === 'approved' ? 'btn-success' : 'btn-danger'}`} onClick={handleAction} disabled={loading}>
-                {loading ? 'Processing...' : actionType === 'approved' ? 'Approve' : 'Deny'}
-              </button>
-            </div>
           </div>
         </div>
       )}

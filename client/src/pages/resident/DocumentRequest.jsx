@@ -2,14 +2,21 @@ import { useState, useEffect } from 'react';
 import api from '../../api/axios';
 import toast from 'react-hot-toast';
 import Badge from '../../components/Badge';
-import { FileText, Send } from 'lucide-react';
-import { format } from 'date-fns';
+import { Send, Download, X, AlertCircle } from 'lucide-react';
 import { SERVER_URL } from '../../api/axios';
+
+import { format } from 'date-fns';
+
+const toLocal = (dateStr) => {
+  const d = new Date(dateStr);
+  return new Date(d.getTime() + (8 * 60 * 60 * 1000));
+};
 
 export default function DocumentRequest() {
   const [form, setForm] = useState({ document_type: '', reason: '', mode: '' });
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [noteModal, setNoteModal] = useState(null);
   const set = k => e => setForm({ ...form, [k]: e.target.value });
 
   const load = () => api.get('/documents/my').then(r => setRequests(r.data)).catch(() => {});
@@ -82,9 +89,24 @@ export default function DocumentRequest() {
                     <td><Badge status={r.status} /></td>
                     <td style={{ fontSize: 12, color: 'var(--text-muted)' }}>{format(new Date(r.requested_at), 'MMM d, yyyy')}</td>
                     <td style={{ fontSize: 12 }}>
-                      {r.status === 'denied' && <span style={{ color: 'var(--danger)' }}>{r.denial_reason}</span>}
-                      {r.status === 'ready' && r.pickup_date && <span style={{ color: 'var(--success)' }}>Pickup: {format(new Date(r.pickup_date), 'MMM d, yyyy h:mm a')}</span>}
-                      {r.soft_copy_url && <a href={`${SERVER_URL}${r.soft_copy_url}`} target="_blank" rel="noreferrer" style={{ color: 'var(--primary)' }}>Download</a>}
+                      {r.status === 'denied' && r.denial_reason && (
+                        <button onClick={() => setNoteModal({ type: 'denied', text: r.denial_reason, updated_at: r.updated_at })}
+                          style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'var(--danger-light, #fff0f0)', color: 'var(--danger)', border: '1px solid var(--danger)', borderRadius: 6, padding: '3px 8px', fontSize: 11, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                          <AlertCircle size={11} /> View Reason
+                        </button>
+                      )}
+                      {r.status === 'ready' && r.pickup_date && (
+                        <button onClick={() => setNoteModal({ type: 'pickup', text: format(new Date(r.pickup_date), 'MMMM d, yyyy h:mm a') })}
+                          style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'var(--success-light, #f0fff4)', color: 'var(--success)', border: '1px solid var(--success)', borderRadius: 6, padding: '3px 8px', fontSize: 11, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                          📅 Pickup Schedule
+                        </button>
+                      )}
+                      {r.soft_copy_url && (
+                        <a href={`${SERVER_URL}${r.soft_copy_url}`} target="_blank" rel="noreferrer"
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'var(--primary)', color: '#fff', borderRadius: 6, padding: '4px 10px', fontSize: 11, fontWeight: 600, textDecoration: 'none' }}>
+                          <Download size={11} /> Download
+                        </a>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -93,6 +115,25 @@ export default function DocumentRequest() {
           </div>
         )}
       </div>
+      {noteModal && (
+        <div className="modal-overlay" onClick={() => setNoteModal(null)}>
+          <div className="modal" style={{ maxWidth: 420 }} onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>{noteModal.type === 'denied' ? '❌ Denial Reason' : '📅 Pickup Schedule'}</h3>
+              <button className="modal-close" onClick={() => setNoteModal(null)}><X size={20} /></button>
+            </div>
+            <p style={{ color: noteModal.type === 'denied' ? 'var(--danger)' : noteModal.type === 'success' ? 'var(--success)' : 'var(--text)', lineHeight: 1.7, fontSize: 14, marginBottom: noteModal.updated_at ? 12 : 0 }}>
+              {noteModal.text}
+            </p>
+            {noteModal.updated_at && (
+              <div style={{ fontSize: 11, color: 'var(--text-muted)', paddingTop: 10, borderTop: '1px solid var(--border)' }}>
+                🕐 Updated on {format(toLocal(noteModal.updated_at), 'MMMM d, yyyy h:mm a')}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+      

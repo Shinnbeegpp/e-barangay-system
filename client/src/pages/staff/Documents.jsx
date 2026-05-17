@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import api from '../../api/axios';
+import api, {SERVER_URL} from '../../api/axios';
 import toast from 'react-hot-toast';
 import Badge from '../../components/Badge';
-import { X, Upload, CheckCircle, XCircle } from 'lucide-react';
+import { X, CheckCircle, Upload } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function StaffDocuments() {
@@ -97,9 +97,36 @@ export default function StaffDocuments() {
               <h3>Process Document Request</h3>
               <button className="modal-close" onClick={() => setSelected(null)}><X size={20} /></button>
             </div>
-            <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12, marginBottom: 16, fontSize: 13 }}>
-              <strong>{selected.first_name} {selected.last_name}</strong> · {selected.document_type}<br />
-              <span style={{ color: 'var(--text-muted)' }}>Mode: {selected.mode === 'soft_copy' ? 'Soft Copy' : 'Pick Up'} · Reason: {selected.reason}</span>
+            <div style={{ background: 'var(--surface2)', borderRadius: 10, padding: '14px 16px', marginBottom: 18, border: '1px solid var(--border)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12, paddingBottom: 12, borderBottom: '1px solid var(--border)' }}>
+                {selected.profile_picture ? (
+                  <img src={`${SERVER_URL}${selected.profile_picture}`} alt="profile"
+                    style={{ width: 38, height: 38, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                ) : (
+                  <div style={{ width: 38, height: 38, borderRadius: '50%', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: 15, flexShrink: 0 }}>
+                    {selected.first_name?.[0]}{selected.last_name?.[0]}
+                  </div>
+                )}
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--text)' }}>{selected.first_name} {selected.last_name}</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{selected.email}</div>
+                </div>
+                <Badge status={selected.status} style={{ marginLeft: 'auto' }} />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 16px', fontSize: 13 }}>
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 2 }}>Document Type</div>
+                  <div style={{ fontWeight: 600, color: 'var(--text)' }}>{selected.document_type}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 2 }}>Delivery Mode</div>
+                  <div style={{ fontWeight: 600, color: 'var(--text)' }}>{selected.mode === 'soft_copy' ? '💾 Soft Copy' : '🏛️ Pick Up'}</div>
+                </div>
+                <div style={{ gridColumn: '1 / -1' }}>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 2 }}>Reason</div>
+                  <div style={{ color: 'var(--text)', lineHeight: 1.5 }}>{selected.reason}</div>
+                </div>
+              </div>
             </div>
             <div className="form-group">
               <label className="form-label">Update Status *</label>
@@ -127,8 +154,31 @@ export default function StaffDocuments() {
             )}
             {modalData.status === 'completed' && selected.mode === 'soft_copy' && (
               <div className="form-group">
-                <label className="form-label">Upload Document (PDF or Image)</label>
-                <input className="form-input" type="file" accept=".pdf,image/*" onChange={e => setSoftCopyFile(e.target.files[0])} />
+                <label className="form-label">Upload Document <span style={{ fontWeight: 400, color: 'var(--text-muted)', fontSize: 12 }}>(PDF or Image)</span></label>
+                <label htmlFor="soft-copy-upload" style={{
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                  gap: 6, padding: '20px 16px', borderRadius: 10, border: '2px dashed var(--border)',
+                  background: softCopyFile ? 'var(--surface2)' : 'transparent',
+                  cursor: 'pointer', transition: 'border-color 0.2s, background 0.2s',
+                }}
+                  onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--primary)'}
+                  onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}
+                >
+                  <Upload size={22} color="var(--text-muted)" />
+                  {softCopyFile ? (
+                    <>
+                      <span style={{ fontWeight: 600, fontSize: 13, color: 'var(--primary)' }}>{softCopyFile.name}</span>
+                      <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Click to change file</span>
+                    </>
+                  ) : (
+                    <>
+                      <span style={{ fontWeight: 600, fontSize: 13, color: 'var(--text)' }}>Click to upload document</span>
+                      <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>PNG, JPG, PDF up to 5MB</span>
+                    </>
+                  )}
+                  <input id="soft-copy-upload" type="file" accept=".pdf,image/*"
+                    style={{ display: 'none' }} onChange={e => setSoftCopyFile(e.target.files[0])} />
+                </label>
               </div>
             )}
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>

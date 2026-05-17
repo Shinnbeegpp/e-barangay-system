@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../api/axios';
-import { User, FileText, Heart, AlertTriangle, Clock, Settings, Megaphone } from 'lucide-react';
+import { Megaphone } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function ResidentDashboard() {

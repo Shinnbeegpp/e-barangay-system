@@ -45,8 +45,10 @@ router.get('/my', auth, async (req, res) => {
 router.get('/', auth, staffOnly, async (req, res) => {
   try {
     const [rows] = await db.query(
-      `SELECT dr.*, u.first_name, u.last_name, u.email
-       FROM document_requests dr JOIN users u ON dr.user_id = u.id
+      `SELECT dr.*, u.first_name, u.last_name, u.email, rp.profile_picture
+       FROM document_requests dr 
+       JOIN users u ON dr.user_id = u.id
+       LEFT JOIN resident_profiles rp ON rp.user_id = u.id
        ORDER BY dr.requested_at DESC`
     );
     res.json(rows);
