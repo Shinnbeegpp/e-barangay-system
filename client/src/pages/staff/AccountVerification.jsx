@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import api,{ fileUrl }from '../../api/axios';
+import PDFViewer from '../../components/PDFViewer';
 import toast from 'react-hot-toast';
 import { CheckCircle, XCircle, X } from 'lucide-react';
 import { format } from 'date-fns';
@@ -186,12 +187,7 @@ export default function AccountVerification() {
             </div>
             <div style={{ textAlign: 'center' }}>
               {viewIdUrl.match(/\.pdf$/i)
-                ? <div style={{ padding: '20px', textAlign: 'center', background: 'var(--surface2)', borderRadius: 8, border: '1px solid var(--border)' }}>
-                    <p style={{ marginBottom: 16, color: 'var(--text-muted)' }}>📄 PDF files cannot be previewed inline</p>
-                    <a href={viewIdUrl} download target="_blank" rel="noreferrer" className="btn btn-primary">
-                      Download PDF
-                    </a>
-                  </div>
+                ? <PDFViewer url={viewIdUrl} />
                 : <img src={viewIdUrl} alt="Valid ID" style={{ width: '100%', borderRadius: 8, border: '1px solid var(--border)' }} />
               }
             </div>

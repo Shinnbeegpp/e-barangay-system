@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import api, { fileUrl } from '../../api/axios';
+import PDFViewer from '../../components/PDFViewer';
 import toast from 'react-hot-toast';
 import Badge from '../../components/Badge';
 import { Lock, Unlock, CheckCircle, XCircle, X, AlertCircle } from 'lucide-react';
@@ -194,12 +195,7 @@ export default function StaffAssistance() {
             </div>
             <div style={{ textAlign: 'center' }}>
               {viewFileUrl.match(/\.pdf$/i)
-                ? <div style={{ padding: '20px', textAlign: 'center', background: 'var(--surface2)', borderRadius: 8, border: '1px solid var(--border)' }}>
-                    <p style={{ marginBottom: 16, color: 'var(--text-muted)' }}>📄 PDF files cannot be previewed inline</p>
-                    <a href={viewFileUrl} download target="_blank" rel="noreferrer" className="btn btn-primary">
-                      Download PDF
-                    </a>
-                  </div>
+                ? <PDFViewer url={viewFileUrl} />
                 : <img src={viewFileUrl} alt="Document" style={{ width: '100%', borderRadius: 8, border: '1px solid var(--border)' }} />
               }
             </div>
