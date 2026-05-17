@@ -14,7 +14,7 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
     );
     if (!profile[0] || profile[0].verification_status !== 'verified')
       return res.status(403).json({ message: 'Account must be verified to file reports' });
-    const image_url = req.file ? '/uploads/' + req.file.filename : null;
+    const image_url = req.file ? req.file.path : null;
     await db.query(
       'INSERT INTO incident_reports (user_id, title, description, location, image_url) VALUES (?, ?, ?, ?, ?)',
       [req.user.id, title, description, location, image_url]

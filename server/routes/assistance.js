@@ -51,7 +51,7 @@ router.post('/', auth, upload.fields([
     const data = { user_id: req.user.id, program_type };
     if (req.files) {
       for (const [key, files] of Object.entries(req.files)) {
-        data[key] = '/uploads/' + files[0].filename;
+        data[key] = files[0].path;
       }
     }
 

@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
 require('dotenv').config();
 
 const app = express();
@@ -21,7 +20,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Serve uploaded files
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Files served from Cloudinary
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));

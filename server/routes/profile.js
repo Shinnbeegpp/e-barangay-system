@@ -50,8 +50,8 @@ router.put('/', auth, (req, res, next) => {
       submitted_at: new Date()
     };
 
-    if (req.files?.profile_picture) updates.profile_picture = '/uploads/' + req.files.profile_picture[0].filename;
-    if (req.files?.valid_id) updates.valid_id = '/uploads/' + req.files.valid_id[0].filename;
+    if (req.files?.profile_picture) updates.profile_picture = req.files.profile_picture[0].path;
+    if (req.files?.valid_id) updates.valid_id = req.files.valid_id[0].path;
 
     console.log('User ID:', req.user.id);
     console.log('Updates object:', updates);

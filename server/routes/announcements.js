@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
 const { auth, staffOnly } = require('../middleware/auth');
+const upload = require('../middleware/upload');
 
 // GET /api/announcements - all active (residents see this too)
 router.get('/', auth, async (req, res) => {
@@ -31,15 +32,15 @@ router.get('/all', auth, staffOnly, async (req, res) => {
 });
 
 // POST /api/announcements - staff creates
-router.post('/', auth, staffOnly, async (req, res) => {
+router.post('/', auth, staffOnly, upload.single('image'), async (req, res) => {
   const { title, content } = req.body;
   if (!title || !content)
     return res.status(400).json({ message: 'Title and content required' });
-
   try {
+    const image_url = req.file ? req.file.path : null;
     await db.query(
-      'INSERT INTO announcements (staff_id, title, content) VALUES (?, ?, ?)',
-      [req.user.id, title, content]
+      'INSERT INTO announcements (staff_id, title, content, image_url) VALUES (?, ?, ?, ?)',
+      [req.user.id, title, content, image_url]
     );
     await db.query('INSERT INTO transaction_logs (staff_id, action, details) VALUES (?, ?, ?)',
       [req.user.id, 'Announcement Created', title]);
@@ -50,11 +51,17 @@ router.post('/', auth, staffOnly, async (req, res) => {
 });
 
 // PUT /api/announcements/:id
-router.put('/:id', auth, staffOnly, async (req, res) => {
+router.put('/:id', auth, staffOnly, upload.single('image'), async (req, res) => {
   const { title, content, is_active } = req.body;
   try {
-    await db.query('UPDATE announcements SET title = ?, content = ?, is_active = ? WHERE id = ?',
-      [title, content, is_active, req.params.id]);
+    if (req.file) {
+      const image_url = req.file.path;
+      await db.query('UPDATE announcements SET title=?, content=?, is_active=?, image_url=? WHERE id=?',
+        [title, content, is_active, image_url, req.params.id]);
+    } else {
+      await db.query('UPDATE announcements SET title=?, content=?, is_active=? WHERE id=?',
+        [title, content, is_active, req.params.id]);
+    }
     res.json({ message: 'Announcement updated' });
   } catch (err) {
     res.status(500).json({ message: 'Server error' });
