@@ -194,7 +194,7 @@ export default function StaffAssistance() {
             </div>
             <div style={{ textAlign: 'center' }}>
               {viewFileUrl.match(/\.pdf$/i)
-                ? <iframe src={viewFileUrl} style={{ width: '100%', height: 500, border: 'none', borderRadius: 8 }} title="Document" />
+                ? <iframe src={`https://docs.google.com/gview?url=${encodeURIComponent(viewFileUrl)}&embedded=true`} style={{ width: '100%', height: 600, border: 'none', borderRadius: 8 }} title="Document" />
                 : <img src={viewFileUrl} alt="Document" style={{ width: '100%', borderRadius: 8, border: '1px solid var(--border)' }} />
               }
             </div>

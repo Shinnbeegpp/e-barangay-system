@@ -93,7 +93,10 @@ export default function ResidentDocuments() {
                     <td>
                       {r.status === 'denied' && <span style={{ fontSize: 12, color: 'var(--danger)' }}>{r.denial_reason}</span>}
                       {r.pickup_date && <span style={{ fontSize: 12, color: 'var(--success)' }}>Pick up: {format(new Date(r.pickup_date), 'MMM d, yyyy h:mm a')}</span>}
-                      {r.soft_copy_url && <a href={`${API_BASE}${r.soft_copy_url}`} target="_blank" rel="noreferrer" className="btn btn-sm btn-outline">Download</a>}
+                      {r.soft_copy_url && (r.soft_copy_url.match(/\.pdf$/i)
+                        ? <a href={r.soft_copy_url} target="_blank" rel="noreferrer" className="btn btn-sm btn-outline">View PDF</a>
+                        : <a href={r.soft_copy_url} target="_blank" rel="noreferrer" className="btn btn-sm btn-outline">View Image</a>
+                      )}
                     </td>
                   </tr>
                 ))}
