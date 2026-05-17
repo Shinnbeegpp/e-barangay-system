@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import api, { SERVER_URL } from '../../api/axios';
+import api, { fileUrl } from '../../api/axios';
 import toast from 'react-hot-toast';
 import Badge from '../../components/Badge';
 import { Lock, Unlock, CheckCircle, XCircle, X, AlertCircle } from 'lucide-react';
@@ -112,11 +112,11 @@ export default function StaffAssistance() {
                     <td style={{ fontSize: 12, color: 'var(--text-muted)' }}>{format(toLocal(a.applied_at), 'MMM d, yyyy')}</td>
                     <td style={{ fontSize: 12 }}>
                       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                        {a.medical_abstract && <button className="btn btn-outline btn-sm" onClick={() => setViewFileUrl(`${SERVER_URL}${a.medical_abstract}`)}>Abstract</button>}
-                        {a.medical_bill && <button className="btn btn-outline btn-sm" onClick={() => setViewFileUrl(`${SERVER_URL}${a.medical_bill}`)}>Bill</button>}
-                        {a.enrollment_certificate && <button className="btn btn-outline btn-sm" onClick={() => setViewFileUrl(`${SERVER_URL}${a.enrollment_certificate}`)}>Enrollment</button>}
-                        {a.grades_file && <button className="btn btn-outline btn-sm" onClick={() => setViewFileUrl(`${SERVER_URL}${a.grades_file}`)}>Grades</button>}
-                        {a.school_id && <button className="btn btn-outline btn-sm" onClick={() => setViewFileUrl(`${SERVER_URL}${a.school_id}`)}>School ID</button>}
+                        {a.medical_abstract && <button className="btn btn-outline btn-sm" onClick={() => setViewFileUrl(fileUrl(a.medical_abstract))}>Abstract</button>}
+                        {a.medical_bill && <button className="btn btn-outline btn-sm" onClick={() => setViewFileUrl(fileUrl(a.medical_bill))}>Bill</button>}
+                        {a.enrollment_certificate && <button className="btn btn-outline btn-sm" onClick={() => setViewFileUrl(fileUrl(a.enrollment_certificate))}>Enrollment</button>}
+                        {a.grades_file && <button className="btn btn-outline btn-sm" onClick={() => setViewFileUrl(fileUrl(a.grades_file))}>Grades</button>}
+                        {a.school_id && <button className="btn btn-outline btn-sm" onClick={() => setViewFileUrl(fileUrl(a.school_id))}>School ID</button>}
                       </div>
                     </td>
                     <td>

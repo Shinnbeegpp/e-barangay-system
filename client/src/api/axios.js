@@ -1,11 +1,13 @@
 import axios from 'axios';
 
-// Automatically uses whatever IP/host the app was opened from
-// So if you open http://192.168.1.5:5173, API calls go to http://192.168.1.5:5000
-// Works on any WiFi without changing anything
-const hostname = window.location.hostname;
-export const SERVER_URL = `http://${hostname}:5000`;
-const API_BASE = `http://${hostname}:5000/api`;
+export const SERVER_URL = import.meta.env.VITE_SERVER_URL || `http://${window.location.hostname}:5000`;
+const API_BASE = import.meta.env.VITE_API_URL || `http://${window.location.hostname}:5000/api`;
+
+export const fileUrl = (url) => {
+  if (!url) return null;
+  if (url.startsWith('http')) return url;
+  return `${SERVER_URL}${url}`;
+};
 
 const api = axios.create({ baseURL: API_BASE });
 

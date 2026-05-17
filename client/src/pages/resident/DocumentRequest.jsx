@@ -3,7 +3,7 @@ import api from '../../api/axios';
 import toast from 'react-hot-toast';
 import Badge from '../../components/Badge';
 import { Send, Download, X, AlertCircle } from 'lucide-react';
-import { SERVER_URL } from '../../api/axios';
+import { fileUrl } from '../../api/axios';
 
 import { format } from 'date-fns';
 
@@ -102,7 +102,7 @@ export default function DocumentRequest() {
                         </button>
                       )}
                       {r.soft_copy_url && (
-                        <a href={`${SERVER_URL}${r.soft_copy_url}`} target="_blank" rel="noreferrer"
+                        <a href={fileUrl(r.soft_copy_url)} target="_blank" rel="noreferrer"
                           style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'var(--primary)', color: '#fff', borderRadius: 6, padding: '4px 10px', fontSize: 11, fontWeight: 600, textDecoration: 'none' }}>
                           <Download size={11} /> Download
                         </a>

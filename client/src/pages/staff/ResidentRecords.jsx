@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import api, { SERVER_URL } from '../../api/axios';
+import api, { fileUrl } from '../../api/axios';
 import { Search, X } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -45,7 +45,7 @@ export default function ResidentRecords() {
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                         {r.profile_picture
-                          ? <img src={`${SERVER_URL}${r.profile_picture}`} alt="" style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover' }} />
+                          ? <img src={fileUrl(r.profile_picture)} alt="" style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover' }} />
                           : <div style={{ width: 34, height: 34, borderRadius: '50%', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>👤</div>
                         }
                         <div>
@@ -79,7 +79,7 @@ export default function ResidentRecords() {
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20, paddingBottom: 16, borderBottom: '1px solid var(--border)' }}>
               {viewing.profile_picture
-                ? <img src={`${SERVER_URL}${viewing.profile_picture}`} alt="" style={{ width: 72, height: 72, borderRadius: '50%', objectFit: 'cover', border: '3px solid var(--border)' }} />
+                ? <img src={fileUrl(viewing.profile_picture)} alt="" style={{ width: 72, height: 72, borderRadius: '50%', objectFit: 'cover', border: '3px solid var(--border)' }} />
                 : <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32 }}>👤</div>
               }
               <div>

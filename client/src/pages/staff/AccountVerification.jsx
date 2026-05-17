@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import api,{ SERVER_URL }from '../../api/axios';
+import api,{ fileUrl }from '../../api/axios';
 import toast from 'react-hot-toast';
 import { CheckCircle, XCircle, X } from 'lucide-react';
 import { format } from 'date-fns';
@@ -67,7 +67,7 @@ export default function AccountVerification() {
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                         {r.profile_picture
-                          ? <img src={`${SERVER_URL}${r.profile_picture}`} alt="" style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover' }} />
+                          ? <img src={fileUrl(r.profile_picture)} alt="" style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover' }} />
                           : <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>👤</div>
                         }
                         <div>
@@ -81,7 +81,7 @@ export default function AccountVerification() {
                     <td style={{ fontSize: 12, color: 'var(--text-muted)' }}>{r.house_number} {r.street_purok_sitio}, Tinurik</td>
                     <td style={{ fontSize: 12, color: 'var(--text-muted)' }}>{r.submitted_at ? format(new Date(r.submitted_at), 'MMM d, yyyy') : '—'}</td>
                     <td>
-                      {r.valid_id && <button className="btn btn-outline btn-sm" onClick={e => { e.stopPropagation(); setViewIdUrl(`${SERVER_URL}${r.valid_id}`); }}>View ID</button>}
+                      {r.valid_id && <button className="btn btn-outline btn-sm" onClick={e => { e.stopPropagation(); setViewIdUrl(fileUrl(r.valid_id)); }}>View ID</button>}
                     </td>
                     <td>
                       <div style={{ display: 'flex', gap: 6 }} onClick={e => e.stopPropagation()}>
@@ -135,7 +135,7 @@ export default function AccountVerification() {
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20, paddingBottom: 16, borderBottom: '1px solid var(--border)' }}>
               {viewResident.profile_picture
-                ? <img src={`${SERVER_URL}${viewResident.profile_picture}`} alt="" style={{ width: 72, height: 72, borderRadius: '50%', objectFit: 'cover', border: '3px solid var(--border)' }} />
+                ? <img src={fileUrl(viewResident.profile_picture)} alt="" style={{ width: 72, height: 72, borderRadius: '50%', objectFit: 'cover', border: '3px solid var(--border)' }} />
                 : <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32 }}>👤</div>
               }
               <div>
@@ -166,7 +166,7 @@ export default function AccountVerification() {
             ))}
             {viewResident.valid_id && (
               <div style={{ marginTop: 12 }}>
-                <button className="btn btn-outline btn-sm" onClick={() => { setViewResident(null); setViewIdUrl(`${SERVER_URL}${viewResident.valid_id}`); }}>📄 View Valid ID</button>
+                <button className="btn btn-outline btn-sm" onClick={() => { setViewResident(null); setViewIdUrl(fileUrl(viewResident.valid_id)); }}>📄 View Valid ID</button>
               </div>
             )}
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 20 }}>

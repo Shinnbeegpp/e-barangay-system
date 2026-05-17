@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import api, { SERVER_URL } from '../../api/axios';
+import api, { fileUrl } from '../../api/axios';
 import toast from 'react-hot-toast';
 import Badge from '../../components/Badge';
 import { X } from 'lucide-react';
@@ -121,7 +121,7 @@ export default function CitizenReports() {
               {selected.image_url && (
                 <>
                   <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>Attached Photo</div>
-                  <img src={`${SERVER_URL}${selected.image_url}`} alt="evidence"
+                  <img src={fileUrl(selected.image_url)} alt="evidence"
                     style={{ width: '100%', maxHeight: 240, objectFit: 'cover', borderRadius: 8, border: '1px solid var(--border)' }} />
                 </>
               )}

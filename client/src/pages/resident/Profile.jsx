@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import api, { SERVER_URL } from '../../api/axios';
+import api, { fileUrl } from '../../api/axios';
 import toast from 'react-hot-toast';
 import { Save, X, Upload } from 'lucide-react';
 import Badge from '../../components/Badge';
@@ -139,7 +139,7 @@ export default function ResidentProfile() {
                 {/* Preview / View button */}
                 {profile?.profile_picture && (
                   <button type="button" className="btn btn-outline btn-sm" style={{ alignSelf: 'flex-start' }}
-                    onClick={() => setViewFileUrl(`${SERVER_URL}${profile.profile_picture}`)}>
+                    onClick={() => setViewFileUrl(fileUrl(profile.profile_picture))}>
                     👁 View Current Photo
                   </button>
                 )}
@@ -176,7 +176,7 @@ export default function ResidentProfile() {
                 {/* View current ID button */}
                 {profile?.valid_id && (
                   <button type="button" className="btn btn-outline btn-sm" style={{ alignSelf: 'flex-start' }}
-                    onClick={() => setViewFileUrl(`${SERVER_URL}${profile.valid_id}`)}>
+                    onClick={() => setViewFileUrl(fileUrl(profile.valid_id))}>
                     👁 View Current ID
                   </button>
                 )}

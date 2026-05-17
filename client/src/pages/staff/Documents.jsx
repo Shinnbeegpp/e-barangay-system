@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import api, {SERVER_URL} from '../../api/axios';
+import api, {fileUrl} from '../../api/axios';
 import toast from 'react-hot-toast';
 import Badge from '../../components/Badge';
 import { X, CheckCircle, Upload } from 'lucide-react';
@@ -100,7 +100,7 @@ export default function StaffDocuments() {
             <div style={{ background: 'var(--surface2)', borderRadius: 10, padding: '14px 16px', marginBottom: 18, border: '1px solid var(--border)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12, paddingBottom: 12, borderBottom: '1px solid var(--border)' }}>
                 {selected.profile_picture ? (
-                  <img src={`${SERVER_URL}${selected.profile_picture}`} alt="profile"
+                  <img src={fileUrl(selected.profile_picture)} alt="profile"
                     style={{ width: 38, height: 38, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
                 ) : (
                   <div style={{ width: 38, height: 38, borderRadius: '50%', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: 15, flexShrink: 0 }}>
