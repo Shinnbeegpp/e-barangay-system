@@ -186,7 +186,7 @@ export default function AccountVerification() {
             </div>
             <div style={{ textAlign: 'center' }}>
               {viewIdUrl.includes('/raw/') || viewIdUrl.match(/\.pdf$/i)
-                ? <iframe src={viewIdUrl} style={{ width: '100%', height: 500, border: 'none', borderRadius: 8 }} title="Valid ID" />
+                ? <iframe src={`https://docs.google.com/viewer?url=${encodeURIComponent(viewIdUrl)}&embedded=true`} style={{ width: '100%', height: 500, border: 'none', borderRadius: 8 }} title="Valid ID" />
                 : <img src={viewIdUrl} alt="Valid ID" style={{ width: '100%', borderRadius: 8, border: '1px solid var(--border)' }} />
               }
             </div>
