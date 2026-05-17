@@ -278,7 +278,12 @@ export default function ResidentProfile() {
             </div>
             <div style={{ textAlign: 'center' }}>
               {viewFileUrl.match(/\.pdf$/i)
-                ? <iframe src={viewFileUrl} style={{ width: '100%', height: 500, border: 'none', borderRadius: 8 }} title="File Preview" />
+                ? <div style={{ padding: '20px', textAlign: 'center', background: 'var(--surface2)', borderRadius: 8, border: '1px solid var(--border)' }}>
+                    <p style={{ marginBottom: 16, color: 'var(--text-muted)' }}>📄 PDF files cannot be previewed inline</p>
+                    <a href={viewFileUrl} download target="_blank" rel="noreferrer" className="btn btn-primary">
+                      Download PDF
+                    </a>
+                  </div>
                 : <img src={viewFileUrl} alt="Preview" style={{ width: '100%', borderRadius: 8, border: '1px solid var(--border)' }} />
               }
             </div>

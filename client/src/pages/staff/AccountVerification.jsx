@@ -186,7 +186,12 @@ export default function AccountVerification() {
             </div>
             <div style={{ textAlign: 'center' }}>
               {viewIdUrl.match(/\.pdf$/i)
-                ? <iframe src={viewIdUrl} style={{ width: '100%', height: 500, border: 'none', borderRadius: 8 }} title="Valid ID" />
+                ? <div style={{ padding: '20px', textAlign: 'center', background: 'var(--surface2)', borderRadius: 8, border: '1px solid var(--border)' }}>
+                    <p style={{ marginBottom: 16, color: 'var(--text-muted)' }}>📄 PDF files cannot be previewed inline</p>
+                    <a href={viewIdUrl} download target="_blank" rel="noreferrer" className="btn btn-primary">
+                      Download PDF
+                    </a>
+                  </div>
                 : <img src={viewIdUrl} alt="Valid ID" style={{ width: '100%', borderRadius: 8, border: '1px solid var(--border)' }} />
               }
             </div>
