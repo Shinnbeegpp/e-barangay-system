@@ -80,9 +80,11 @@ export default function MyTracker() {
                             style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'var(--primary)', color: '#fff', borderRadius: 6, padding: '4px 10px', fontSize: 11, fontWeight: 600, border: 'none', cursor: 'pointer' }}
                             onClick={async () => {
                               const url = fileUrl(d.soft_copy_url);
+                              const originalUrl = d.soft_copy_url || '';
+                              const isPdf = originalUrl.includes('/raw/') || originalUrl.toLowerCase().includes('.pdf');
+                              const ext = isPdf ? '.pdf' : originalUrl.toLowerCase().includes('.png') ? '.png' : '.jpg';
                               const res = await fetch(url);
                               const blob = await res.blob();
-                              const ext = blob.type.includes('pdf') ? '.pdf' : blob.type.includes('png') ? '.png' : '.jpg';
                               const link = document.createElement('a');
                               link.href = URL.createObjectURL(blob);
                               link.download = `document_${d.id}${ext}`;
