@@ -9,16 +9,27 @@ export default function PDFViewer({ url }) {
   const [numPages, setNumPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const pdfDocRef = useRef(null);
 
   useEffect(() => {
     const loadPdf = async () => {
       try {
         setLoading(true);
-        const pdf = await pdfjsLib.getDocument(url).promise;
+        setError(null);
+
+        // Fetch PDF as blob to handle CORS
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Failed to fetch PDF');
+        const arrayBuffer = await response.arrayBuffer();
+
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        pdfDocRef.current = pdf;
         setNumPages(pdf.numPages);
-        renderPage(pdf, 1);
-      } catch (error) {
-        console.error('Error loading PDF:', error);
+        await renderPage(pdf, 1);
+      } catch (err) {
+        console.error('Error loading PDF:', err);
+        setError(err.message || 'Failed to load PDF');
       } finally {
         setLoading(false);
       }
@@ -42,21 +53,25 @@ export default function PDFViewer({ url }) {
       };
 
       await page.render(renderContext).promise;
-    } catch (error) {
-      console.error('Error rendering page:', error);
+      setCurrentPage(pageNum);
+    } catch (err) {
+      console.error('Error rendering page:', err);
+      setError('Failed to render page');
     }
   };
 
   const handlePageChange = async (newPage) => {
-    if (newPage < 1 || newPage > numPages) return;
-    setCurrentPage(newPage);
+    if (newPage < 1 || newPage > numPages || !pdfDocRef.current) return;
     try {
-      const pdf = await pdfjsLib.getDocument(url).promise;
-      renderPage(pdf, newPage);
-    } catch (error) {
-      console.error('Error changing page:', error);
+      await renderPage(pdfDocRef.current, newPage);
+    } catch (err) {
+      console.error('Error changing page:', err);
     }
   };
+
+  if (error) {
+    return <div style={{ textAlign: 'center', padding: '20px', color: 'var(--danger)' }}>⚠️ {error}</div>;
+  }
 
   if (loading) {
     return <div style={{ textAlign: 'center', padding: '20px', color: 'var(--text-muted)' }}>Loading PDF...</div>;
