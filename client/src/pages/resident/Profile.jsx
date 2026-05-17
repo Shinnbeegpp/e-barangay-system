@@ -138,15 +138,10 @@ export default function ResidentProfile() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {/* Preview / View button */}
                 {profile?.profile_picture && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <img src={`${SERVER_URL}${profile.profile_picture}`} alt="Profile"
-                      style={{ width: 56, height: 56, objectFit: 'cover', borderRadius: '50%', border: '2px solid var(--border)', cursor: 'pointer' }}
-                      onClick={() => setViewFileUrl(`${SERVER_URL}${profile.profile_picture}`)} />
-                    <button type="button" className="btn btn-outline btn-sm"
-                      onClick={() => setViewFileUrl(`${SERVER_URL}${profile.profile_picture}`)}>
-                      👁 View Current Photo
-                    </button>
-                  </div>
+                  <button type="button" className="btn btn-outline btn-sm" style={{ alignSelf: 'flex-start' }}
+                    onClick={() => setViewFileUrl(`${SERVER_URL}${profile.profile_picture}`)}>
+                    👁 View Current Photo
+                  </button>
                 )}
                 {/* Upload area */}
                 <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '20px 16px', border: '2px dashed var(--border)', borderRadius: 'var(--radius-sm)', cursor: 'pointer', background: 'var(--surface2)', transition: 'border-color .2s' }}

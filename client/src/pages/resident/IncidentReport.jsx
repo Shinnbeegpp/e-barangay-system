@@ -69,17 +69,21 @@ export default function IncidentReport() {
             <label className="form-label">
               Photo / Evidence <span style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 400 }}>(Optional)</span>
             </label>
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-              <label style={{ flex: 1 }}>
-                <input className="form-input" type="file" accept="image/*" onChange={e => setImageFile(e.target.files[0])} />
-              </label>
-              <label style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '10px 14px', border: '1.5px solid var(--border)', borderRadius: 'var(--radius-sm)', cursor: 'pointer', fontWeight: 600, fontSize: 13, background: 'var(--surface)', whiteSpace: 'nowrap' }}>
+            <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', border: '1.5px solid var(--border)', borderRadius: 'var(--radius-sm)', cursor: 'pointer', fontWeight: 600, fontSize: 13, background: 'var(--surface)', whiteSpace: 'nowrap' }}>
                 <input type="file" accept="image/*" capture="environment" onChange={e => setImageFile(e.target.files[0])} style={{ display: 'none' }} />
                 📷 Take Photo
               </label>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', border: '1.5px solid var(--border)', borderRadius: 'var(--radius-sm)', cursor: 'pointer', fontWeight: 600, fontSize: 13, background: 'var(--surface)', whiteSpace: 'nowrap' }}>
+                <input type="file" accept="image/*" onChange={e => setImageFile(e.target.files[0])} style={{ display: 'none' }} />
+                📁 Choose File
+              </label>
+              {imageFile && (
+                <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>✓ {imageFile.name}</span>
+              )}
             </div>
             {imageFile && (
-              <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
                 <img src={URL.createObjectURL(imageFile)} alt="preview" style={{ width: 80, height: 60, objectFit: 'cover', borderRadius: 6, border: '1px solid var(--border)' }} />
                 <button type="button" className="btn btn-outline btn-sm" onClick={() => setImageFile(null)}>Remove</button>
               </div>

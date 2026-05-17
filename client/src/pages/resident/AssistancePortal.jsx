@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../../api/axios';
 import toast from 'react-hot-toast';
 import Badge from '../../components/Badge';
-import { Lock, Send } from 'lucide-react';
+import { Lock, Send, Upload } from 'lucide-react';
 import { format } from 'date-fns';
 
 const toLocal = (dateStr) => {
@@ -87,12 +87,42 @@ export default function AssistancePortal() {
           <div className="alert alert-info">Please upload the required documents to process your application.</div>
           <form onSubmit={handleApply}>
             <div className="form-group">
-              <label className="form-label">Medical Abstract * <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>(PDF or Image)</span></label>
-              <input className="form-input" type="file" accept="image/*,.pdf" onChange={setFile('medical_abstract')} required />
+              <label className="form-label">Medical Abstract * <span style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 400 }}>(PDF or Image)</span></label>
+              {!files.medical_abstract && (
+                <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '20px 16px', border: '2px dashed var(--border)', borderRadius: 'var(--radius-sm)', cursor: 'pointer', background: 'var(--surface2)', transition: 'border-color .2s' }}
+                  onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--primary-light)'}
+                  onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}>
+                  <input type="file" accept="image/*,.pdf" onChange={setFile('medical_abstract')} style={{ display: 'none' }} required />
+                  <Upload size={20} color="var(--text-muted)" />
+                  <span style={{ fontSize: 13, fontWeight: 600 }}>Click to upload Medical Abstract</span>
+                  <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>PNG, JPG, PDF up to 5MB</span>
+                </label>
+              )}
+              {files.medical_abstract && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 8, padding: '8px 12px', background: '#f0fdf4', borderRadius: 8, border: '1px solid #bbf7d0' }}>
+                  <span style={{ fontSize: 12, color: 'var(--success)', fontWeight: 600, flex: 1 }}>✅ {files.medical_abstract.name}</span>
+                  <button type="button" onClick={() => setFiles({ ...files, medical_abstract: null })} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>✕</button>
+                </div>
+              )}
             </div>
             <div className="form-group">
-              <label className="form-label">Medical Bill / Statement of Account * <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>(PDF or Image)</span></label>
-              <input className="form-input" type="file" accept="image/*,.pdf" onChange={setFile('medical_bill')} required />
+              <label className="form-label">Medical Bill / Statement of Account * <span style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 400 }}>(PDF or Image)</span></label>
+              {!files.medical_bill && (
+                <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '20px 16px', border: '2px dashed var(--border)', borderRadius: 'var(--radius-sm)', cursor: 'pointer', background: 'var(--surface2)', transition: 'border-color .2s' }}
+                  onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--primary-light)'}
+                  onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}>
+                  <input type="file" accept="image/*,.pdf" onChange={setFile('medical_bill')} style={{ display: 'none' }} required />
+                  <Upload size={20} color="var(--text-muted)" />
+                  <span style={{ fontSize: 13, fontWeight: 600 }}>Click to upload Medical Bill</span>
+                  <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>PNG, JPG, PDF up to 5MB</span>
+                </label>
+              )}
+              {files.medical_bill && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 8, padding: '8px 12px', background: '#f0fdf4', borderRadius: 8, border: '1px solid #bbf7d0' }}>
+                  <span style={{ fontSize: 12, color: 'var(--success)', fontWeight: 600, flex: 1 }}>✅ {files.medical_bill.name}</span>
+                  <button type="button" onClick={() => setFiles({ ...files, medical_bill: null })} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>✕</button>
+                </div>
+              )}
             </div>
             <div style={{ display: 'flex', gap: 10 }}>
               <button className="btn btn-primary" type="submit" disabled={loading}><Send size={15} /> {loading ? 'Submitting...' : 'Submit Application'}</button>
@@ -107,18 +137,31 @@ export default function AssistancePortal() {
           <h3 style={{ marginBottom: 16, fontWeight: 700 }}>🎓 Educational Assistance Application</h3>
           <div className="alert alert-info">Please upload the required documents to process your application.</div>
           <form onSubmit={handleApply}>
-            <div className="form-group">
-              <label className="form-label">Certificate of Enrollment * <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>(PDF or Image)</span></label>
-              <input className="form-input" type="file" accept="image/*,.pdf" onChange={setFile('enrollment_certificate')} required />
-            </div>
-            <div className="form-group">
-              <label className="form-label">Grades / Report Card * <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>(PDF or Image)</span></label>
-              <input className="form-input" type="file" accept="image/*,.pdf" onChange={setFile('grades_file')} required />
-            </div>
-            <div className="form-group">
-              <label className="form-label">School ID * <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>(Image)</span></label>
-              <input className="form-input" type="file" accept="image/*" onChange={setFile('school_id')} required />
-            </div>
+            {[
+              { key: 'enrollment_certificate', label: 'Certificate of Enrollment', accept: 'image/*,.pdf', hint: 'PNG, JPG, PDF up to 5MB', placeholder: 'Click to upload Certificate of Enrollment' },
+              { key: 'grades_file', label: 'Grades / Report Card', accept: 'image/*,.pdf', hint: 'PNG, JPG, PDF up to 5MB', placeholder: 'Click to upload Grades / Report Card' },
+              { key: 'school_id', label: 'School ID', accept: 'image/*,.pdf', hint: 'PNG, JPG, PDF up to 5MB', placeholder: 'Click to upload School ID' },
+            ].map(({ key, label, accept, hint, placeholder }) => (
+              <div className="form-group" key={key}>
+                <label className="form-label">{label} *</label>
+                {!files[key] && (
+                  <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '20px 16px', border: '2px dashed var(--border)', borderRadius: 'var(--radius-sm)', cursor: 'pointer', background: 'var(--surface2)', transition: 'border-color .2s' }}
+                    onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--primary-light)'}
+                    onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}>
+                    <input type="file" accept={accept} onChange={setFile(key)} style={{ display: 'none' }} required />
+                    <Upload size={20} color="var(--text-muted)" />
+                    <span style={{ fontSize: 13, fontWeight: 600 }}>{placeholder}</span>
+                    <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{hint}</span>
+                  </label>
+                )}
+                {files[key] && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 8, padding: '8px 12px', background: '#f0fdf4', borderRadius: 8, border: '1px solid #bbf7d0' }}>
+                    <span style={{ fontSize: 12, color: 'var(--success)', fontWeight: 600, flex: 1 }}>✅ {files[key].name}</span>
+                    <button type="button" onClick={() => setFiles({ ...files, [key]: null })} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>✕</button>
+                  </div>
+                )}
+              </div>
+            ))}
             <div style={{ display: 'flex', gap: 10 }}>
               <button className="btn btn-primary" type="submit" disabled={loading}><Send size={15} /> {loading ? 'Submitting...' : 'Submit Application'}</button>
               <button className="btn btn-outline" type="button" onClick={() => setSelected(null)}>Cancel</button>
