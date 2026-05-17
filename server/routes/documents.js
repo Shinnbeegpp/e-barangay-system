@@ -65,7 +65,7 @@ router.put('/:id', auth, staffOnly, upload.single('soft_copy'), async (req, res)
     const updates = { status };
     if (denial_reason) updates.denial_reason = denial_reason;
     if (pickup_date) updates.pickup_date = pickup_date;
-    if (req.file) updates.soft_copy_url = '/uploads/' + req.file.filename;
+    if (req.file) updates.soft_copy_url = req.file.path;
 
     await db.query('UPDATE document_requests SET ? WHERE id = ?', [updates, req.params.id]);
 
