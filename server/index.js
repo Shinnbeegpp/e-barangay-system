@@ -8,12 +8,13 @@ const app = express();
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
-    const allowed = [
-      /^http:\/\/(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+)(:\d+)?$/,
-    ];
-    const vercelUrl = process.env.CLIENT_URL;
-    if (vercelUrl && origin === vercelUrl) return callback(null, true);
-    if (allowed.some(r => r.test(origin))) return callback(null, true);
+    // Allow Vercel deployments
+    if (origin.endsWith('.vercel.app')) return callback(null, true);
+    // Allow local network
+    const local = /^http:\/\/(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+)(:\d+)?$/;
+    if (local.test(origin)) return callback(null, true);
+    // Allow specific CLIENT_URL
+    if (process.env.CLIENT_URL && origin === process.env.CLIENT_URL) return callback(null, true);
     callback(new Error('Not allowed by CORS'));
   },
   credentials: true
