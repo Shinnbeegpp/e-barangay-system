@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import api, { fileUrl } from '../../api/axios';
-import PDFViewer from '../../components/PDFViewer';
 import toast from 'react-hot-toast';
 import Badge from '../../components/Badge';
 import { Lock, Unlock, CheckCircle, XCircle, X, AlertCircle } from 'lucide-react';
@@ -194,8 +193,8 @@ export default function StaffAssistance() {
               <button className="modal-close" onClick={() => setViewFileUrl(null)}><X size={20} /></button>
             </div>
             <div style={{ textAlign: 'center' }}>
-              {viewFileUrl.match(/\.pdf$/i)
-                ? <PDFViewer url={viewFileUrl} />
+              {viewFileUrl.includes('/raw/') || viewFileUrl.match(/\.pdf$/i)
+                ? <iframe src={viewFileUrl} style={{ width: '100%', height: 500, border: 'none', borderRadius: 8 }} title="Document" />
                 : <img src={viewFileUrl} alt="Document" style={{ width: '100%', borderRadius: 8, border: '1px solid var(--border)' }} />
               }
             </div>

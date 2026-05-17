@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import api,{ fileUrl }from '../../api/axios';
-import PDFViewer from '../../components/PDFViewer';
 import toast from 'react-hot-toast';
 import { CheckCircle, XCircle, X } from 'lucide-react';
 import { format } from 'date-fns';
@@ -186,8 +185,8 @@ export default function AccountVerification() {
               <button className="modal-close" onClick={() => setViewIdUrl(null)}><X size={20} /></button>
             </div>
             <div style={{ textAlign: 'center' }}>
-              {viewIdUrl.match(/\.pdf$/i)
-                ? <PDFViewer url={viewIdUrl} />
+              {viewIdUrl.includes('/raw/') || viewIdUrl.match(/\.pdf$/i)
+                ? <iframe src={viewIdUrl} style={{ width: '100%', height: 500, border: 'none', borderRadius: 8 }} title="Valid ID" />
                 : <img src={viewIdUrl} alt="Valid ID" style={{ width: '100%', borderRadius: 8, border: '1px solid var(--border)' }} />
               }
             </div>
