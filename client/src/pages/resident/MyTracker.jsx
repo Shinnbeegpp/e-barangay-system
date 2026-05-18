@@ -155,7 +155,7 @@ export default function MyTracker() {
                             style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'var(--surface2)', color: 'var(--text)', border: '1px solid var(--border)', borderRadius: 6, padding: '3px 8px', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>
                             📋 View Notes
                           </button>
-                        ) : '—'}
+                        ) : ''}
                       </td>
                     </tr>
                   ))}
