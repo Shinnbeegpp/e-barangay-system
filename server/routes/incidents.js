@@ -25,6 +25,19 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
   }
 });
 
+// PUT /api/incidents/:id/cancel - resident cancels
+router.put('/:id/cancel', auth, async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM incident_reports WHERE id = ? AND user_id = ?', [req.params.id, req.user.id]);
+    if (!rows[0]) return res.status(404).json({ message: 'Report not found' });
+    if (rows[0].status !== 'pending') return res.status(400).json({ message: 'Only pending reports can be cancelled' });
+    await db.query('UPDATE incident_reports SET status = ? WHERE id = ?', ['cancelled', req.params.id]);
+    res.json({ message: 'Report cancelled successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 router.get('/my', auth, async (req, res) => {
   try {
     const [rows] = await db.query(

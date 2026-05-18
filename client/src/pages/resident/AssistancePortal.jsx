@@ -42,8 +42,21 @@ export default function AssistancePortal() {
   const [loading, setLoading] = useState(false);
   const [applications, setApplications] = useState([]);
   const [noteModal, setNoteModal] = useState(null);
+  const [confirmCancel, setConfirmCancel] = useState(null);
 
   const loadPrograms = () => api.get('/assistance/programs').then(r => setPrograms(r.data)).catch(() => {});
+
+  const handleCancel = async () => {
+    try {
+      await api.put(`/assistance/${confirmCancel}/cancel`);
+      toast.success('Application cancelled');
+      setConfirmCancel(null);
+      loadApps();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Error cancelling application');
+    }
+  };
+
   const loadApps = () => api.get('/assistance/my').then(r => setApplications(r.data)).catch(() => {});
   useEffect(() => { loadPrograms(); loadApps(); }, []);
 
@@ -192,6 +205,12 @@ export default function AssistancePortal() {
                           <AlertCircle size={11} /> View Reason
                         </button>
                       )}
+                      {a.status === 'pending' && (
+                        <button onClick={() => setConfirmCancel(a.id)}
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: '#fff0f0', color: 'var(--danger)', border: '1px solid var(--danger)', borderRadius: 6, padding: '3px 8px', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>
+                          ✕ Cancel
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -213,6 +232,23 @@ export default function AssistancePortal() {
                 🕐 Updated on {format(toLocal(noteModal.updated_at), 'MMMM d, yyyy h:mm a')}
               </div>
             )}
+          </div>
+        </div>
+      )}
+      {confirmCancel && (
+        <div className="modal-overlay">
+          <div className="modal" style={{ maxWidth: 380 }}>
+            <div className="modal-header">
+              <h3>Cancel Application</h3>
+              <button className="modal-close" onClick={() => setConfirmCancel(null)}><X size={20} /></button>
+            </div>
+            <p style={{ color: 'var(--text-muted)', fontSize: 14, marginBottom: 20 }}>
+              Are you sure you want to cancel this assistance application? This action cannot be undone.
+            </p>
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+              <button className="btn btn-outline" onClick={() => setConfirmCancel(null)}>No, Keep it</button>
+              <button className="btn btn-danger" onClick={handleCancel}>Yes, Cancel</button>
+            </div>
           </div>
         </div>
       )}
