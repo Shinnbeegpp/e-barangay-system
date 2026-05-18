@@ -57,6 +57,19 @@ router.get('/', auth, staffOnly, async (req, res) => {
   }
 });
 
+// PUT /api/documents/:id/cancel - resident cancels
+router.put('/:id/cancel', auth, async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM document_requests WHERE id = ? AND user_id = ?', [req.params.id, req.user.id]);
+    if (!rows[0]) return res.status(404).json({ message: 'Request not found' });
+    if (rows[0].status !== 'pending') return res.status(400).json({ message: 'Only pending requests can be cancelled' });
+    await db.query('UPDATE document_requests SET status = ? WHERE id = ?', ['cancelled', req.params.id]);
+    res.json({ message: 'Request cancelled successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // PUT /api/documents/:id - staff processes request
 router.put('/:id', auth, staffOnly, upload.single('soft_copy'), async (req, res) => {
   const { status, denial_reason, pickup_date } = req.body;

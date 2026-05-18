@@ -80,7 +80,9 @@ export default function StaffDocuments() {
                     <td><Badge status={r.status} /></td>
                     <td style={{ fontSize: 12, color: 'var(--text-muted)' }}>{format(new Date(r.requested_at), 'MMM d, yyyy')}</td>
                     <td>
-                      <button className="btn btn-primary btn-sm" onClick={() => openModal(r)}>Process</button>
+                      {r.status !== 'cancelled' && (
+                        <button className="btn btn-primary btn-sm" onClick={() => openModal(r)}>Process</button>
+                      )}
                     </td>
                   </tr>
                 ))}

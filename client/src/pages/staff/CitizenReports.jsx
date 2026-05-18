@@ -74,7 +74,9 @@ export default function CitizenReports() {
                     <td><Badge status={r.status} /></td>
                     <td style={{ fontSize: 12, color: 'var(--text-muted)' }}>{format(toLocal(r.reported_at), 'MMM d, yyyy')}</td>
                     <td>
-                      <button className="btn btn-primary btn-sm" onClick={() => openReport(r)}>View & Act</button>
+                      {r.status !== 'cancelled' && (
+                        <button className="btn btn-primary btn-sm" onClick={() => openReport(r)}>View & Act</button>
+                      )}
                     </td>
                   </tr>
                 ))}

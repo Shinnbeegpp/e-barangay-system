@@ -17,7 +17,20 @@ export default function DocumentRequest() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(false);
   const [noteModal, setNoteModal] = useState(null);
+  const [confirmCancel, setConfirmCancel] = useState(null);
   const set = k => e => setForm({ ...form, [k]: e.target.value });
+
+  const handleCancel = async () => {
+  try {
+    console.log('Cancelling ID:', confirmCancel);
+    await api.put(`/documents/${confirmCancel}/cancel`);
+    toast.success('Request cancelled');
+    setConfirmCancel(null);
+    load();
+  } catch (err) {
+    toast.error(err.response?.data?.message || 'Error cancelling request');
+  }
+};
 
   const load = () => api.get('/documents/my').then(r => setRequests(r.data)).catch(() => {});
   useEffect(() => { load(); }, []);
@@ -107,6 +120,11 @@ export default function DocumentRequest() {
                           <Download size={11} /> Download
                         </a>
                       )}
+                      {r.status === 'pending' && (
+                        <button onClick={() => setConfirmCancel(r.id)} style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'var(--danger-light, #fff0f0)', color: 'var(--danger)', border: '1px solid var(--danger)', borderRadius: 6, padding: '3px 8px', fontSize: 11, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                          <X size={11} /> Cancel Request
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -130,6 +148,24 @@ export default function DocumentRequest() {
                 🕐 Updated on {format(toLocal(noteModal.updated_at), 'MMMM d, yyyy h:mm a')}
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {confirmCancel && (
+        <div className="modal-overlay">
+          <div className="modal" style={{ maxWidth: 380 }}>
+            <div className="modal-header">
+              <h3>Cancel Request</h3>
+              <button className="modal-close" onClick={() => setConfirmCancel(null)}><X size={20} /></button>
+            </div>
+            <p style={{ color: 'var(--text-muted)', fontSize: 14, marginBottom: 20 }}>
+              Are you sure you want to cancel this document request? This action cannot be undone.
+            </p>
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+              <button className="btn btn-outline" onClick={() => setConfirmCancel(null)}>No, Keep it</button>
+              <button className="btn btn-danger" onClick={handleCancel}>Yes, Cancel</button>
+            </div>
           </div>
         </div>
       )}

@@ -63,6 +63,19 @@ router.post('/', auth, upload.fields([
   }
 });
 
+// PUT /api/assistance/:id/cancel - resident cancels
+router.put('/:id/cancel', auth, async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM assistance_applications WHERE id = ? AND user_id = ?', [req.params.id, req.user.id]);
+    if (!rows[0]) return res.status(404).json({ message: 'Application not found' });
+    if (rows[0].status !== 'pending') return res.status(400).json({ message: 'Only pending applications can be cancelled' });
+    await db.query('UPDATE assistance_applications SET status = ? WHERE id = ?', ['cancelled', req.params.id]);
+    res.json({ message: 'Application cancelled successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // GET /api/assistance/my - resident's own applications
 router.get('/my', auth, async (req, res) => {
   try {

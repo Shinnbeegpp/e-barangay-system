@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../../api/axios';
 import toast from 'react-hot-toast';
 import Badge from '../../components/Badge';
-import { AlertTriangle, Send, X, FileText } from 'lucide-react';
+import { AlertTriangle, Send, X} from 'lucide-react';
 import { format } from 'date-fns';
 
 const toLocal = (dateStr) => {
@@ -14,10 +14,23 @@ export default function IncidentReport() {
   const [form, setForm] = useState({ title: '', description: '', location: '' });
   const [imageFile, setImageFile] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [confirmCancel, setConfirmCancel] = useState(null);
   const [reports, setReports] = useState([]);
   const [noteModal, setNoteModal] = useState(null);
 
   const set = k => e => setForm({ ...form, [k]: e.target.value });
+
+  const handleCancel = async () => {
+    try {
+      await api.put(`/incidents/${confirmCancel}/cancel`);
+      toast.success('Report cancelled');
+      setConfirmCancel(null);
+      loadReports();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Error cancelling report');
+    }
+  };
+
   const loadReports = () => api.get('/incidents/my').then(r => setReports(r.data)).catch(() => {});
   useEffect(() => { loadReports(); }, []);
 
@@ -135,9 +148,15 @@ export default function IncidentReport() {
                       {r.staff_notes ? (
                         <button onClick={() => setNoteModal(r)}
                           style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'var(--surface2)', color: 'var(--text)', border: '1px solid var(--border)', borderRadius: 6, padding: '3px 8px', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>
-                          <FileText size={11} /> View Notes
+                          📋 View Notes
                         </button>
-                      ) : '—'}
+                      ) : ''}
+                      {r.status === 'pending' && (
+                        <button onClick={() => setConfirmCancel(r.id)}
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: '#fff0f0', color: 'var(--danger)', border: '1px solid var(--danger)', borderRadius: 6, padding: '3px 8px', fontSize: 11, fontWeight: 600, cursor: 'pointer', marginLeft: 4 }}>
+                          ✕ Cancel
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -156,6 +175,24 @@ export default function IncidentReport() {
             <p style={{ color: 'var(--text)', lineHeight: 1.7, fontSize: 14, marginBottom: 12 }}>{noteModal.staff_notes}</p>
             <div style={{ fontSize: 11, color: 'var(--text-muted)', paddingTop: 10, borderTop: '1px solid var(--border)' }}>
               🕐 Updated on {format(toLocal(noteModal.updated_at), 'MMM d, yyyy h:mm a')}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {confirmCancel && (
+        <div className="modal-overlay">
+          <div className="modal" style={{ maxWidth: 380 }}>
+            <div className="modal-header">
+              <h3>Cancel Report</h3>
+              <button className="modal-close" onClick={() => setConfirmCancel(null)}><X size={20} /></button>
+            </div>
+            <p style={{ color: 'var(--text-muted)', fontSize: 14, marginBottom: 20 }}>
+              Are you sure you want to cancel this incident report? This action cannot be undone.
+            </p>
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+              <button className="btn btn-outline" onClick={() => setConfirmCancel(null)}>No, Keep it</button>
+              <button className="btn btn-danger" onClick={handleCancel}>Yes, Cancel</button>
             </div>
           </div>
         </div>
