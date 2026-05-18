@@ -32,7 +32,7 @@ export default function Login() {
       <div className="auth-card">
         <div className="auth-logo">
           <div style={{ fontSize: 52 }}>🏛️</div>
-          <h1>E-Barangay Tinurik</h1>
+          <h1>E-Barangay System</h1>
           <p>Tanauan City, Batangas · ZIP 4232</p>
         </div>
         <form onSubmit={handleSubmit}>
