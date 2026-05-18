@@ -96,7 +96,7 @@ export default function DocumentRequest() {
                         </button>
                       )}
                       {r.status === 'ready' && r.pickup_date && (
-                        <button onClick={() => setNoteModal({ type: 'pickup', text: format(new Date(r.pickup_date), 'MMMM d, yyyy h:mm a') })}
+                        <button onClick={() => setNoteModal({ type: 'pickup', text: `Date: ${format(toLocal(r.pickup_date), 'MMMM d, yyyy')}\nTime: ${format(toLocal(r.pickup_date), 'hh:mm a')}`, updated_at: r.updated_at })}
                           style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'var(--success-light, #f0fff4)', color: 'var(--success)', border: '1px solid var(--success)', borderRadius: 6, padding: '3px 8px', fontSize: 11, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
                           📅 Pickup Schedule
                         </button>
@@ -122,7 +122,7 @@ export default function DocumentRequest() {
               <h3>{noteModal.type === 'denied' ? '❌ Denial Reason' : '📅 Pickup Schedule'}</h3>
               <button className="modal-close" onClick={() => setNoteModal(null)}><X size={20} /></button>
             </div>
-            <p style={{ color: noteModal.type === 'denied' ? 'var(--danger)' : noteModal.type === 'success' ? 'var(--success)' : 'var(--text)', lineHeight: 1.7, fontSize: 14, marginBottom: noteModal.updated_at ? 12 : 0 }}>
+            <p style={{ color: noteModal.type === 'denied' ? 'var(--danger)' : noteModal.type === 'pickup' ? 'var(--success)' : 'var(--text)', lineHeight: 1.7, fontSize: 14, marginBottom: noteModal.updated_at ? 12 : 0, whiteSpace: 'pre-line' }}>
               {noteModal.text}
             </p>
             {noteModal.updated_at && (
