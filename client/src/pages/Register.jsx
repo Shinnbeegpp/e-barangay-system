@@ -33,7 +33,7 @@ export default function Register() {
         <div className="auth-logo">
           <div style={{ fontSize: 52 }}>🏛️</div>
           <h1>Create Account</h1>
-          <p>E-Barangay Tinurik · Resident Registration</p>
+          <p>E-Barangay System · Resident Registration</p>
         </div>
         <form onSubmit={handleSubmit}>
           <div className="form-row">
