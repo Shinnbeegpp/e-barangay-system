@@ -23,7 +23,6 @@ A full-stack MERN (MySQL + Express + React + Node.js) barangay management system
 **Default Admin Login:**
 - Email: `admin@ebarangay.com`
 - Password: `password`
-> ⚠️ Change this password immediately after first login!
 
 ### Step 2: Configure Backend
 1. Edit `server/.env`:
@@ -52,18 +51,6 @@ npm install
 npm run dev
 ```
 App runs at: http://localhost:5173
-
----
-
-## 📱 Mobile Access (Phone Browser)
-1. Make sure your phone is on the **same WiFi** as your computer
-2. Find your computer's local IP:
-   - Windows: Run `ipconfig` → look for IPv4 Address (e.g. 192.168.1.5)
-   - Mac/Linux: Run `ifconfig` or `ip addr`
-3. On your phone browser, open: `http://192.168.1.5:5173`
-
-> The Vite server is already configured with `host: '0.0.0.0'` for network access.
-
 ---
 
 ## 👥 User Roles
@@ -74,58 +61,4 @@ App runs at: http://localhost:5173
 | Staff | Admin creates via Admin Accounts page | Staff Portal |
 | Admin | Created directly in DB (schema.sql) | Full Staff + Admin Portal |
 
----
-
-## 📁 Project Structure
-```
-ebarangay/
-├── server/
-│   ├── config/
-│   │   ├── db.js          # MySQL connection pool
-│   │   └── schema.sql     # Database schema (run this first!)
-│   ├── middleware/
-│   │   ├── auth.js        # JWT authentication
-│   │   └── upload.js      # Multer file upload
-│   ├── routes/
-│   │   ├── auth.js        # Login & Register
-│   │   ├── profile.js     # Resident profile
-│   │   ├── documents.js   # Document requests
-│   │   ├── assistance.js  # Assistance programs
-│   │   ├── incidents.js   # Incident reports
-│   │   ├── announcements.js
-│   │   └── staff.js       # Staff management
-│   ├── uploads/           # Uploaded files (auto-created)
-│   ├── index.js           # Express server entry
-│   └── .env               # Environment variables
-│
-└── client/
-    └── src/
-        ├── api/axios.js       # API configuration
-        ├── context/AuthContext.jsx
-        ├── components/
-        │   ├── ResidentLayout.jsx
-        │   ├── StaffLayout.jsx
-        │   └── Badge.jsx
-        └── pages/
-            ├── Login.jsx
-            ├── Register.jsx
-            ├── resident/      # All resident pages
-            └── staff/         # All staff pages
-```
-
----
-
-## 🔧 Troubleshooting
-
-**"Can't connect to MySQL"**
-→ Check DB_PASSWORD in server/.env matches your MySQL root password
-
-**"Port 5000 already in use"**
-→ Change PORT in server/.env
-
-**Mobile can't connect**
-→ Check Windows Firewall allows port 5173 and 5000 for private networks
-
-**File uploads not working**
-→ The `server/uploads/` folder is auto-created on first run
 
