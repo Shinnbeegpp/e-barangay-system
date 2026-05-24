@@ -7,9 +7,9 @@ import { format } from 'date-fns';
 
 const toLocal = (dateStr) => {
   if (!dateStr) return new Date();
-  // Append Z to tell browser this is UTC, then browser converts to local time
-  const utcStr = dateStr.toString().replace(' ', 'T') + 'Z';
-  return new Date(utcStr);
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return new Date();
+  return d;
 };
 
 export default function CitizenReports() {
@@ -74,7 +74,7 @@ export default function CitizenReports() {
                     <td style={{ fontWeight: 500, maxWidth: 200 }}>{r.title}</td>
                     <td style={{ fontSize: 12, color: 'var(--text-muted)' }}>{r.location}</td>
                     <td><Badge status={r.status} /></td>
-                    <td style={{ fontSize: 12, color: 'var(--text-muted)' }}>{format(toLocal(r.reported_at), 'MMM d, yyyy')}</td>
+                    <td style={{ fontSize: 12, color: 'var(--text-muted)' }}>{r.reported_at ? format(toLocal(r.reported_at), 'MMM d, yyyy') : '—'}</td>
                     <td>
                       <button className="btn btn-primary btn-sm" onClick={() => openReport(r)}>View & Act</button>
                     </td>
@@ -98,7 +98,7 @@ export default function CitizenReports() {
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10, marginBottom: 12, paddingBottom: 12, borderBottom: '1px solid var(--border)' }}>
                 <div>
                   <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--text)', marginBottom: 3 }}>{selected.title}</div>
-                  <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Filed by <strong>{selected.first_name} {selected.last_name}</strong> · {format(toLocal(selected.reported_at), 'MMM d, yyyy h:mm a')}</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Filed by <strong>{selected.first_name} {selected.last_name}</strong> · {selected.reported_at ? format(toLocal(selected.reported_at), 'MMM d, yyyy h:mm a') : '—'}</div>
                 </div>
                 <Badge status={selected.status} />
               </div>

@@ -7,9 +7,9 @@ import { format } from 'date-fns';
 
 const toLocal = (dateStr) => {
   if (!dateStr) return new Date();
-  // Append Z to tell browser this is UTC, then browser converts to local time
-  const utcStr = dateStr.toString().replace(' ', 'T') + 'Z';
-  return new Date(utcStr);
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return new Date();
+  return d;
 };
 
 export default function StaffAssistance() {
