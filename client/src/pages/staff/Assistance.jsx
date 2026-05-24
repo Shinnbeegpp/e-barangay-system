@@ -111,7 +111,7 @@ export default function StaffAssistance() {
                       <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{a.email}</div>
                     </td>
                     <td><Badge status={a.status} /></td>
-                    <td style={{ fontSize: 12, color: 'var(--text-muted)' }}>{format(toLocal(a.applied_at), 'MMM d, yyyy')}</td>
+                    <td style={{ fontSize: 12, color: 'var(--text-muted)' }}>{a.applied_at ? format(toLocal(a.applied_at), 'MMM d, yyyy') : '—'}</td>
                     <td style={{ fontSize: 12 }}>
                       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                         {a.medical_abstract && <button className="btn btn-outline btn-sm" onClick={() => setViewFileUrl(fileUrl(a.medical_abstract))}>Abstract</button>}
@@ -158,7 +158,7 @@ export default function StaffAssistance() {
               <div>
                 <p style={{ color: 'var(--danger)', lineHeight: 1.7, fontSize: 14, marginBottom: 12 }}>{selected.denial_reason}</p>
                 <div style={{ fontSize: 11, color: 'var(--text-muted)', paddingTop: 10, borderTop: '1px solid var(--border)' }}>
-                  🕐 Updated on {format(toLocal(selected.updated_at), 'MMMM d, yyyy h:mm a')}
+                  🕐 Updated on {selected.updated_at ? format(toLocal(selected.updated_at), 'MMMM d, yyyy h:mm a') : '—'}
                 </div>
               </div>
             ) : (
