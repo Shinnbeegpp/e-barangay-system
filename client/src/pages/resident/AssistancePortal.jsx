@@ -6,8 +6,7 @@ import { Lock, Send, Upload, X, AlertCircle } from 'lucide-react';
 import { format } from 'date-fns';
 
 const toLocal = (dateStr) => {
-  const d = new Date(dateStr);
-  return new Date(d.getTime() + (8 * 60 * 60 * 1000));
+  return new Date(dateStr);
 };
 
 const ProgramCard = ({ prog, type, icon, title, desc, selected, onSelect }) => {

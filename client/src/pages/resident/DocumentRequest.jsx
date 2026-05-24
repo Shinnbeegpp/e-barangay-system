@@ -8,8 +8,7 @@ import { fileUrl } from '../../api/axios';
 import { format } from 'date-fns';
 
 const toLocal = (dateStr) => {
-  const d = new Date(dateStr);
-  return new Date(d.getTime() + (8 * 60 * 60 * 1000));
+  return new Date(dateStr);
 };
 
 export default function DocumentRequest() {
