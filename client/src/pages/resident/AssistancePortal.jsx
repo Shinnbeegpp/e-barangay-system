@@ -6,7 +6,10 @@ import { Lock, Send, Upload, X, AlertCircle } from 'lucide-react';
 import { format } from 'date-fns';
 
 const toLocal = (dateStr) => {
-  return new Date(dateStr);
+  if (!dateStr) return new Date();
+  // Append Z to tell browser this is UTC, then browser converts to local time
+  const utcStr = dateStr.toString().replace(' ', 'T') + 'Z';
+  return new Date(utcStr);
 };
 
 const ProgramCard = ({ prog, type, icon, title, desc, selected, onSelect }) => {
