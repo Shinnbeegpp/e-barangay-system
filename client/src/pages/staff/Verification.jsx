@@ -29,7 +29,7 @@ export default function StaffVerification() {
       toast.success(`Account ${action === 'approve' ? 'approved' : 'denied'}`);
       setModal(null); setSelected(null); setDenyReason('');
       load();
-    } catch (err) {
+    } catch {
       toast.error('Failed to update');
     } finally { setProcessing(false); }
   };
