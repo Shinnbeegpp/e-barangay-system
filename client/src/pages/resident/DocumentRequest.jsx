@@ -9,7 +9,12 @@ import { format } from 'date-fns';
 
 const toLocal = (dateStr) => {
   if (!dateStr) return new Date();
-  const d = new Date(dateStr);
+  // MySQL returns UTC timestamps without Z - add Z so browser converts correctly
+  const str = dateStr.toString().includes('T') 
+    ? dateStr.toString() 
+    : dateStr.toString().replace(' ', 'T');
+  const withZ = str.endsWith('Z') ? str : str + 'Z';
+  const d = new Date(withZ);
   if (isNaN(d.getTime())) return new Date();
   return d;
 };
