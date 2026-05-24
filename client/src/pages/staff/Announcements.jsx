@@ -10,6 +10,7 @@ export default function Announcements() {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({ title: '', content: '', is_active: true });
   const [loading, setLoading] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(null);
 
   const load = () => api.get('/announcements/all').then(r => setAnnouncements(r.data)).catch(() => {});
   useEffect(() => { load(); }, []);
@@ -35,11 +36,11 @@ export default function Announcements() {
     } finally { setLoading(false); }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm('Delete this announcement?')) return;
+  const handleDelete = async () => {
     try {
-      await api.delete(`/announcements/${id}`);
+      await api.delete(`/announcements/${confirmDelete}`);
       toast.success('Announcement deleted');
+      setConfirmDelete(null);
       load();
     } catch { toast.error('Error deleting'); }
   };
@@ -82,7 +83,7 @@ export default function Announcements() {
                     {a.is_active ? <EyeOff size={14} /> : <Eye size={14} />}
                   </button>
                   <button className="btn btn-outline btn-sm" onClick={() => openEdit(a)}><Edit size={14} /></button>
-                  <button className="btn btn-danger btn-sm" onClick={() => handleDelete(a.id)}><Trash2 size={14} /></button>
+                  <button className="btn btn-danger btn-sm" onClick={() => setConfirmDelete(a.id)}><Trash2 size={14} /></button>
                 </div>
               </div>
             </div>
@@ -122,6 +123,23 @@ export default function Announcements() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {confirmDelete && (
+        <div className="modal-overlay">
+          <div className="modal" style={{ maxWidth: 380 }}>
+            <div className="modal-header">
+              <h3>🗑️ Delete Announcement</h3>
+              <button className="modal-close" onClick={() => setConfirmDelete(null)}><X size={20} /></button>
+            </div>
+            <p style={{ color: 'var(--text-muted)', fontSize: 14, marginBottom: 24 }}>
+              Are you sure you want to delete this announcement? This action cannot be undone.
+            </p>
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+              <button className="btn btn-outline" onClick={() => setConfirmDelete(null)}>Cancel</button>
+              <button className="btn btn-danger" onClick={handleDelete}>Yes, Delete</button>
+            </div>
           </div>
         </div>
       )}
